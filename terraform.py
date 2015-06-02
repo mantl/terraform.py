@@ -25,6 +25,8 @@ import json
 import os
 import re
 
+VERSION = '0.3.0pre'
+
 
 def tfstates(root=None):
     root = root or os.getcwd()
@@ -361,6 +363,9 @@ def main():
                        action='store_true',
                        help='list all variables')
     modes.add_argument('--host', help='list variables for a single host')
+    modes.add_argument('--version',
+                       action='store_true',
+                       help='print version and exit')
     parser.add_argument('--pretty',
                         action='store_true',
                         help='pretty-print output JSON')
@@ -374,6 +379,10 @@ def main():
                         help='custom root to search for `.tfstate`s in')
 
     args = parser.parse_args()
+
+    if args.version:
+        print('%s %s' % (__file__, VERSION))
+        parser.exit()
 
     hosts = iterhosts(iterresources(tfstates(args.root)))
     if args.list:
