@@ -56,7 +56,7 @@ def gce_resource():
 
 
 def test_name(gce_resource, gce_host):
-    name, _, _ = gce_host(gce_resource)
+    name, _, _ = gce_host(gce_resource, '')
     assert name == 'mi-control-01'
 
 
@@ -93,12 +93,12 @@ def test_name(gce_resource, gce_host):
     'ansible_ssh_host': '104.197.63.156',
     'ansible_ssh_port': 22,
     # mi
-    'consul_dc': 'gce-dc',
+    'consul_dc': 'module_name',
     'role': 'control',
     'publicly_routable': True,
 }.items())
 def test_attrs(gce_resource, gce_host, attr, should):
-    _, attrs, _ = gce_host(gce_resource)
+    _, attrs, _ = gce_host(gce_resource, 'module_name')
     assert attr in attrs
     assert attrs[attr] == should
 
@@ -112,8 +112,8 @@ def test_attrs(gce_resource, gce_host, attr, should):
     'gce_tag=control',
     'gce_publicly_routable',
     'role=control',
-    'dc=gce-dc',
+    'dc=module_name',
 ])
 def test_groups(gce_resource, gce_host, group):
-    _, _, groups = gce_host(gce_resource)
+    _, _, groups = gce_host(gce_resource, 'module_name')
     assert group in groups
