@@ -56,7 +56,7 @@ def gce_resource():
 
 
 def test_name(gce_resource, gce_host):
-    name, _, _ = gce_host(gce_resource)
+    name, _, _ = gce_host(gce_resource, '')
     assert name == 'mi-control-01'
 
 
@@ -98,7 +98,7 @@ def test_name(gce_resource, gce_host):
     'publicly_routable': True,
 }.items())
 def test_attrs(gce_resource, gce_host, attr, should):
-    _, attrs, _ = gce_host(gce_resource)
+    _, attrs, _ = gce_host(gce_resource, 'module_name')
     assert attr in attrs
     assert attrs[attr] == should
 
@@ -115,5 +115,5 @@ def test_attrs(gce_resource, gce_host, attr, should):
     'dc=gce-dc',
 ])
 def test_groups(gce_resource, gce_host, group):
-    _, _, groups = gce_host(gce_resource)
+    _, _, groups = gce_host(gce_resource, 'module_name')
     assert group in groups

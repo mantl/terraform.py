@@ -40,7 +40,7 @@ def aws_resource():
 
 
 def test_name(aws_resource, aws_host):
-    name, _, _ = aws_host(aws_resource)
+    name, _, _ = aws_host(aws_resource, '')
     assert name == 'mi-control-01'
 
 
@@ -77,7 +77,7 @@ def test_name(aws_resource, aws_host):
     'consul_dc': 'aws',
 }.items())
 def test_attrs(aws_resource, aws_host, attr, should):
-    _, attrs, _ = aws_host(aws_resource)
+    _, attrs, _ = aws_host(aws_resource, 'module_name')
     assert attr in attrs
     assert attrs[attr] == should
 
@@ -88,7 +88,8 @@ def test_attrs(aws_resource, aws_host, attr, should):
      'aws_tenancy=default', 'aws_tag_sshUser=ec2-user', 'aws_tag_role=control',
      'aws_tag_dc=aws', 'aws_tag_Name=mi-control-01',
      'aws_vpc_security_group=sg-9c360cf8',
-     'aws_vpc_security_group=sg-9d360cf9', 'aws_subnet_id=subnet-1155c03a'])
+     'aws_vpc_security_group=sg-9d360cf9', 'aws_subnet_id=subnet-1155c03a',
+     'role=control', 'dc=aws'])
 def test_groups(aws_resource, aws_host, group):
-    _, _, groups = aws_host(aws_resource)
+    _, _, groups = aws_host(aws_resource, 'module_name')
     assert group in groups

@@ -42,7 +42,7 @@ def openstack_resource():
 
 
 def test_name(openstack_resource, openstack_host):
-    name, _, _ = openstack_host(openstack_resource)
+    name, _, _ = openstack_host(openstack_resource, '')
     assert name == 'mi-control-01'
 
 
@@ -76,14 +76,14 @@ def test_name(openstack_resource, openstack_host):
     'ansible_ssh_host': '173.39.243.27',
     'publicly_routable': True,
     # mi
-    'consul_dc': 'eu-amsterdam-1',
+    'consul_dc': 'module_name',
     'role': 'control',
     # and the bugfix
     'use_host_domain': True,
     'host_domain': 'novalocal',
 }.items())
 def test_attrs(openstack_resource, openstack_host, attr, should):
-    _, attrs, _ = openstack_host(openstack_resource)
+    _, attrs, _ = openstack_host(openstack_resource, 'module_name')
     assert attr in attrs
     assert attrs[attr] == should
 
@@ -93,8 +93,8 @@ def test_attrs(openstack_resource, openstack_host, attr, should):
     'os_metadata_role=control',
     'os_region=eu-amsterdam-1',
     'role=control',
-    'dc=eu-amsterdam-1',
+    'dc=module_name',
 ])
 def test_groups(openstack_resource, openstack_host, group):
-    _, _, groups = openstack_host(openstack_resource)
+    _, _, groups = openstack_host(openstack_resource, 'module_name')
     assert group in groups
