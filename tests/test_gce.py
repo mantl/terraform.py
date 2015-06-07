@@ -93,7 +93,7 @@ def test_name(gce_resource, gce_host):
     'ansible_ssh_host': '104.197.63.156',
     'ansible_ssh_port': 22,
     # mi
-    'consul_dc': 'module_name',
+    'consul_dc': 'gce-dc',
     'role': 'control',
     'publicly_routable': True,
 }.items())
@@ -112,7 +112,7 @@ def test_attrs(gce_resource, gce_host, attr, should):
     'gce_tag=control',
     'gce_publicly_routable',
     'role=control',
-    'dc=module_name',
+    'dc=gce-dc',
 ])
 def test_groups(gce_resource, gce_host, group):
     _, _, groups = gce_host(gce_resource, 'module_name')
