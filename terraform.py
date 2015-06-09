@@ -223,7 +223,7 @@ def aws_host(resource, module_name):
         'public': parse_dict(raw_attrs, 'public',
                              sep='_'),
         'root_block_device': parse_attr_list(raw_attrs, 'root_block_device'),
-        'security_groups': parse_attr_list(raw_attrs, 'security_groups'),
+        'security_groups': parse_list(raw_attrs, 'security_groups'),
         'subnet': parse_dict(raw_attrs, 'subnet',
                              sep='_'),
         'tags': parse_dict(raw_attrs, 'tags'),
