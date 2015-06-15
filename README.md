@@ -24,6 +24,7 @@ reading Terraform's `.tfstate` files. It currently supports:
  - AWS ([`aws_instance`](https://www.terraform.io/docs/providers/aws/r/instance.html))
  - Google Cloud ([`google_compute_instance`](https://www.terraform.io/docs/providers/google/r/compute_instance.html))
  - Openstack ([`openstack_compute_instance_v2`'](https://www.terraform.io/docs/providers/openstack/r/compute_instance_v2.html))
+ - DigitalOcean ([`digitalocean_droplet`](http://terraform.io/docs/providers/do/r/droplet.html))
 
 ## Installation
 
