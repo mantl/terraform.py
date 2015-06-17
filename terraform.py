@@ -463,7 +463,6 @@ def main():
     default_root = os.environ.get('TERRAFORM_STATE_ROOT',
                                   os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                                '..', '..', )))
-
     parser.add_argument('--root',
                         default=default_root,
                         help='custom root to search for `.tfstate`s in')
