@@ -96,6 +96,10 @@ def test_name(gce_resource, gce_host):
     'consul_dc': 'gce-dc',
     'role': 'control',
     'publicly_routable': True,
+    # generic
+    'private_ipv4': '10.0.237.130',
+    'public_ipv4': '104.197.63.156',
+    'provider': 'gce',
 }.items())
 def test_attrs(gce_resource, gce_host, attr, should):
     _, attrs, _ = gce_host(gce_resource, 'module_name')

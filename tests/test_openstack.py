@@ -81,6 +81,10 @@ def test_name(openstack_resource, openstack_host):
     # and the bugfix
     'use_host_domain': True,
     'host_domain': 'novalocal',
+    # generic
+    'public_ipv4': '173.39.243.27',
+    'private_ipv4': '173.39.243.27',
+    'provider': 'openstack',
 }.items())
 def test_attrs(openstack_resource, openstack_host, attr, should):
     _, attrs, _ = openstack_host(openstack_resource, 'module_name')
