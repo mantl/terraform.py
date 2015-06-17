@@ -75,6 +75,10 @@ def test_name(aws_resource, aws_host):
     'ansible_ssh_user': 'ec2-user',
     # mi
     'consul_dc': 'aws',
+    # generic
+    'private_ipv4': '10.0.152.191',
+    'public_ipv4': '52.7.74.115',
+    'provider': 'aws',
 }.items())
 def test_attrs(aws_resource, aws_host, attr, should):
     _, attrs, _ = aws_host(aws_resource, 'module_name')

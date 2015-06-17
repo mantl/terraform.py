@@ -45,6 +45,7 @@ def test_name(digitalocean_resource, digitalocean_host):
     # generic
     'public_ipv4': '1.2.3.4',
     'private_ipv4': '1.2.3.4',
+    'provider': 'digitalocean',
     # mi
     'consul_dc': 'nyc3',
     'role': 'control',
