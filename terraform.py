@@ -193,6 +193,43 @@ def digitalocean_host(resource, tfvars=None):
     return name, attrs, groups
 
 
+@parses('softlayer_virtualserver')
+@calculate_mi_vars
+def softlayer_host(resource, module_name):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs['name']
+    groups = []
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'image': raw_attrs['image'],
+        'ipv4_address': raw_attrs['ipv4_address'],
+        'metadata': json.loads(raw_attrs['user_data']),
+        'region': raw_attrs['region'],
+        'ram': raw_attrs['ram'],
+        'cpu': raw_attrs['cpu'],
+        'ssh_keys': parse_list(raw_attrs, 'ssh_keys'),
+        'public_ipv4': raw_attrs['ipv4_address'],
+        'private_ipv4': raw_attrs['ipv4_address_private'],
+        'ansible_ssh_host': raw_attrs['ipv4_address'],
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': 'root',
+        'provider': 'softlayer',
+    }
+
+    # attrs specific to microservices-infrastructure
+    attrs.update({
+        'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
+        'role': attrs['metadata'].get('role', 'none')
+    })
+
+    # groups specific to microservices-infrastructure
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
+
+
 @parses('openstack_compute_instance_v2')
 @calculate_mi_vars
 def openstack_host(resource, module_name):
