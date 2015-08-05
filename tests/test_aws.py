@@ -24,6 +24,14 @@ def aws_resource():
                 "private_ip": "10.0.152.191", "public_dns":
                 "ec2-52-7-74-115.compute-1.amazonaws.com", "public_ip":
                 "52.7.74.115", "root_block_device.#": "1",
+                "ebs_block_device.#": "1",
+                "ebs_block_device.3075786550.delete_on_termination": "false",
+                "ebs_block_device.3075786550.device_name": "xvdh",
+                "ebs_block_device.3075786550.encrypted": "false",
+                "ebs_block_device.3075786550.iops": "300",
+                "ebs_block_device.3075786550.snapshot_id": "",
+                "ebs_block_device.3075786550.volume_size": "100",
+                "ebs_block_device.3075786550.volume_type": "gp2",
                 "root_block_device.0.delete_on_termination": "true",
                 "root_block_device.0.iops": "18",
                 "root_block_device.0.volume_size": "6",
@@ -47,7 +55,15 @@ def test_name(aws_resource, aws_host):
 @pytest.mark.parametrize('attr,should', {
     'ami': 'ami-fe100a96',
     'availability_zone': 'us-east-1e',
-    'ebs_block_device': [],
+    'ebs_block_device': [{
+        'delete_on_termination': 'false',
+        'device_name': 'xvdh',
+        'encrypted': 'false',
+        'iops': '300',
+        'snapshot_id': '',
+        'volume_size': '100',
+        'volume_type': 'gp2',
+    }],
     'ebs_optimized': False,
     'ephemeral_block_device': [],
     'id': 'i-c99f6f60',
