@@ -246,7 +246,6 @@ def openstack_host(resource, module_name):
         'security_groups': parse_list(raw_attrs, 'security_groups'),
         # ansible
         'ansible_ssh_port': 22,
-        'ansible_ssh_user': raw_attrs.get('metadata.ssh_user', 'centos'),
         # workaround for an OpenStack bug where hosts have a different domain
         # after they're restarted
         'host_domain': 'novalocal',
@@ -267,6 +266,10 @@ def openstack_host(resource, module_name):
         })
     except (KeyError, ValueError):
         attrs.update({'ansible_ssh_host': '', 'publicly_routable': False})
+
+    # attrs specific to Ansible
+    if 'metadata.ssh_user' in raw_attrs:
+        attrs['ansible_ssh_user'] = raw_attrs['metadata.ssh_user']
 
     # attrs specific to Mantl
     attrs.update({
@@ -319,13 +322,16 @@ def aws_host(resource, module_name):
                                              'vpc_security_group_ids'),
         # ansible-specific
         'ansible_ssh_port': 22,
-        'ansible_ssh_user': raw_attrs['tags.sshUser'],
         'ansible_ssh_host': raw_attrs['public_ip'],
         # generic
         'public_ipv4': raw_attrs['public_ip'],
         'private_ipv4': raw_attrs['private_ip'],
         'provider': 'aws',
     }
+
+    # attrs specific to Ansible
+    if 'tags.sshUser' in raw_attrs:
+        attrs['ansible_ssh_user'] = raw_attrs['tags.sshUser']
 
     # attrs specific to Mantl
     attrs.update({
@@ -381,9 +387,12 @@ def gce_host(resource, module_name):
         'zone': raw_attrs['zone'],
         # ansible
         'ansible_ssh_port': 22,
-        'ansible_ssh_user': raw_attrs.get('metadata.ssh_user', 'centos'),
         'provider': 'gce',
     }
+
+    # attrs specific to Ansible
+    if 'metadata.ssh_user' in raw_attrs:
+        attrs['ansible_ssh_user'] = raw_attrs['metadata.ssh_user']
 
     # attrs specific to Mantl
     attrs.update({
@@ -447,8 +456,11 @@ def vsphere_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('consul_dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_ssh_user': attrs['metadata'].get('ssh_user', 'centos'),
     })
+
+    # attrs specific to Ansible
+    if 'ssh_user' in attrs['metadata']:
+        attrs['ansible_ssh_user'] = attrs['metadata']['ssh_user']
 
     groups.append('role=' + attrs['role'])
     groups.append('dc=' + attrs['consul_dc'])
