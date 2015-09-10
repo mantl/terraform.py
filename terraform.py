@@ -76,7 +76,7 @@ def parses(prefix):
 
 
 def calculate_mi_vars(func):
-    """calculate microservices-infrastructure vars"""
+    """calculate Mantl vars"""
 
     @wraps(func)
     def inner(*args, **kwargs):
@@ -165,7 +165,7 @@ def digitalocean_host(resource, tfvars=None):
         'provider': 'digitalocean',
     }
 
-    # attrs specific to microservices-infrastructure
+    # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
         'role': attrs['metadata'].get('role', 'none')
@@ -180,7 +180,7 @@ def digitalocean_host(resource, tfvars=None):
     groups.extend('do_metadata_%s=%s' % item
                   for item in attrs['metadata'].items())
 
-    # groups specific to microservices-infrastructure
+    # groups specific to Mantl
     groups.append('role=' + attrs['role'])
     groups.append('dc=' + attrs['consul_dc'])
 
@@ -211,13 +211,13 @@ def softlayer_host(resource, module_name):
         'provider': 'softlayer',
     }
 
-    # attrs specific to microservices-infrastructure
+    # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
         'role': attrs['metadata'].get('role', 'none')
     })
 
-    # groups specific to microservices-infrastructure
+    # groups specific to Mantl
     groups.append('role=' + attrs['role'])
     groups.append('dc=' + attrs['consul_dc'])
 
@@ -268,7 +268,7 @@ def openstack_host(resource, module_name):
     except (KeyError, ValueError):
         attrs.update({'ansible_ssh_host': '', 'publicly_routable': False})
 
-    # attrs specific to microservices-infrastructure
+    # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
@@ -281,7 +281,7 @@ def openstack_host(resource, module_name):
                   for item in attrs['metadata'].items())
     groups.append('os_region=' + attrs['region'])
 
-    # groups specific to microservices-infrastructure
+    # groups specific to Mantl
     groups.append('role=' + attrs['metadata'].get('role', 'none'))
     groups.append('dc=' + attrs['consul_dc'])
 
@@ -327,13 +327,13 @@ def aws_host(resource, module_name):
         'provider': 'aws',
     }
 
-    # attrs specific to microservices-infrastructure
+    # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['tags'].get('dc', module_name)),
         'role': attrs['tags'].get('role', 'none')
     })
 
-    # groups specific to microservices-infrastructure
+    # groups specific to Mantl
     groups.extend(['aws_ami=' + attrs['ami'],
                    'aws_az=' + attrs['availability_zone'],
                    'aws_key_name=' + attrs['key_name'],
@@ -344,7 +344,7 @@ def aws_host(resource, module_name):
     groups.extend('aws_subnet_%s=%s' % subnet
                   for subnet in attrs['subnet'].items())
 
-    # groups specific to microservices-infrastructure
+    # groups specific to Mantl
     groups.append('role=' + attrs['role'])
     groups.append('dc=' + attrs['consul_dc'])
 
@@ -385,7 +385,7 @@ def gce_host(resource, module_name):
         'provider': 'gce',
     }
 
-    # attrs specific to microservices-infrastructure
+    # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
@@ -415,7 +415,7 @@ def gce_host(resource, module_name):
     if attrs['publicly_routable']:
         groups.append('gce_publicly_routable')
 
-    # groups specific to microservices-infrastructure
+    # groups specific to Mantl
     groups.append('role=' + attrs['metadata'].get('role', 'none'))
     groups.append('dc=' + attrs['consul_dc'])
 
