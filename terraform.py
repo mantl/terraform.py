@@ -168,7 +168,8 @@ def digitalocean_host(resource, tfvars=None):
     # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
-        'role': attrs['metadata'].get('role', 'none')
+        'role': attrs['metadata'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
     })
 
     # add groups based on attrs
@@ -214,7 +215,8 @@ def softlayer_host(resource, module_name):
     # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
-        'role': attrs['metadata'].get('role', 'none')
+        'role': attrs['metadata'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
     })
 
     # groups specific to Mantl
@@ -275,6 +277,7 @@ def openstack_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
     })
 
     # add groups based on attrs
@@ -336,7 +339,8 @@ def aws_host(resource, module_name):
     # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['tags'].get('dc', module_name)),
-        'role': attrs['tags'].get('role', 'none')
+        'role': attrs['tags'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['tags'].get('python_bin','python')
     })
 
     # groups specific to Mantl
@@ -398,6 +402,7 @@ def gce_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
     })
 
     try:
@@ -456,6 +461,7 @@ def vsphere_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('consul_dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
     })
 
     # attrs specific to Ansible
