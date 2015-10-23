@@ -36,7 +36,16 @@ place on your filesystem should do the trick.
 
 ## Usage
 
-Specify `terraform.py` as an inventory source for any Ansible command. For
+Make sure that you've annotated your resources with "tags" that correspond to the sshUser for the machine.
+
+Example, for EC2 resources, add a [tags](https://www.terraform.io/docs/providers/aws/r/instance.html#tags) entry of "sshUser" equal to "ec2-user":
+	
+	tags {
+      Name = "cheese"
+      sshUser = "ec2-user"
+    }
+
+Next, specify `terraform.py` as an inventory source for any Ansible command. For
 instance, to use this to test if your servers are working:
 
     ansible -i terraform.py -m ping all
