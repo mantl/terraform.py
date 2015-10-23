@@ -467,6 +467,55 @@ def vsphere_host(resource, module_name):
 
     return name, attrs, groups
 
+@parses('azure_instance')
+@calculate_mi_vars
+def azure_host(resource, module_name):
+    name = resource['primary']['attributes']['name']
+    raw_attrs = resource['primary']['attributes']
+
+    groups = []
+
+    attrs = {
+        'automatic_updates': raw_attrs['automatic_updates'],
+        'description': raw_attrs['description'],
+        'hosted_service_name': raw_attrs['hosted_service_name'],
+        'id': raw_attrs['id'],
+        'image': raw_attrs['image'],
+        'ip_address': raw_attrs['ip_address'],
+        'location': raw_attrs['location'],
+        'name': raw_attrs['name'],
+        'reverse_dns': raw_attrs['reverse_dns'],
+        'security_group': raw_attrs['security_group'],
+        'size': raw_attrs['size'],
+        'ssh_key_thumbprint': raw_attrs['ssh_key_thumbprint'],
+        'subnet': raw_attrs['subnet'],
+        'username': raw_attrs['username'],
+        'vip_address': raw_attrs['vip_address'],
+        'virtual_network': raw_attrs['virtual_network'],
+        'endpoint': parse_attr_list(raw_attrs, 'endpoint'),
+        # ansible
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': raw_attrs['username'],
+        'ansible_ssh_host': raw_attrs['vip_address'],
+    }
+
+    # attrs specific to microservices-infrastructure
+    attrs.update({
+        'consul_dc': attrs['location'].lower().replace(" ", "-"),
+        'role': attrs['description']
+    })
+
+    # groups specific to microservices-infrastructure
+    groups.extend(['azure_image=' + attrs['image'],
+                   'azure_location=' + attrs['location'].lower().replace(" ", "-"),
+                   'azure_username=' + attrs['username'],
+                   'azure_security_group=' + attrs['security_group']])
+
+    # groups specific to microservices-infrastructure
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
 
 ## QUERY TYPES
 def query_host(hosts, target):
