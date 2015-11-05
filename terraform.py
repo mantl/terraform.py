@@ -442,6 +442,7 @@ def vsphere_host(resource, module_name):
         'id': raw_attrs['id'],
         'ip_address': raw_attrs['ip_address'],
         'private_ipv4': raw_attrs['ip_address'],
+        'public_ipv4': raw_attrs['ip_address'],
         'metadata': parse_dict(raw_attrs, 'configuration_parameters'),
         'ansible_ssh_port': 22,
         'provider': 'vsphere',
