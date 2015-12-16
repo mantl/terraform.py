@@ -25,6 +25,9 @@ reading Terraform's `.tfstate` files. It currently supports:
  - Google Cloud ([`google_compute_instance`](https://www.terraform.io/docs/providers/google/r/compute_instance.html))
  - Openstack ([`openstack_compute_instance_v2`'](https://www.terraform.io/docs/providers/openstack/r/compute_instance_v2.html))
  - DigitalOcean ([`digitalocean_droplet`](http://terraform.io/docs/providers/do/r/droplet.html))
+ - Azure ([`azure_instance`](https://www.terraform.io/docs/providers/azure/r/instance.html))
+ - VMware vSphere ([`vsphere_virtual_machine`](https://www.terraform.io/docs/providers/vsphere/r/virtual_machine.html))
+ - SoftLayer ([`softlayer_virtualserver`](https://github.com/finn-no/terraform-provider-softlayer)) (Unofficial)
 
 ## Installation
 
