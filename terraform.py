@@ -199,7 +199,7 @@ def softlayer_host(resource, module_name):
         'id': raw_attrs['id'],
         'image': raw_attrs['image'],
         'ipv4_address': raw_attrs['ipv4_address'],
-        'metadata': json.loads(raw_attrs['user_data']),
+        'metadata': json.loads(raw_attrs.get('user_data', '{}')),
         'region': raw_attrs['region'],
         'ram': raw_attrs['ram'],
         'cpu': raw_attrs['cpu'],
