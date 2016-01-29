@@ -442,22 +442,25 @@ def gce_host(resource, module_name):
 @calculate_mi_vars
 def vsphere_host(resource, module_name):
     raw_attrs = resource['primary']['attributes']
+    network_attrs = parse_dict(raw_attrs, 'network_interface')
+    network = parse_dict(network_attrs, '0')
+    ip_address = network.get('ipv4_address', network['ip_address'])
     name = raw_attrs['name']
     groups = []
 
     attrs = {
         'id': raw_attrs['id'],
-        'ip_address': raw_attrs['ip_address'],
-        'private_ipv4': raw_attrs['ip_address'],
-        'public_ipv4': raw_attrs['ip_address'],
-        'metadata': parse_dict(raw_attrs, 'configuration_parameters'),
+        'ip_address': ip_address,
+        'private_ipv4': ip_address,
+        'public_ipv4': ip_address,
+        'metadata': parse_dict(raw_attrs, 'custom_configuration_parameters'),
         'ansible_ssh_port': 22,
         'provider': 'vsphere',
     }
 
     try:
         attrs.update({
-            'ansible_ssh_host': raw_attrs['ip_address'],
+            'ansible_ssh_host': ip_address,
         })
     except (KeyError, ValueError):
         attrs.update({'ansible_ssh_host': '', })
