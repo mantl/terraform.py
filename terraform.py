@@ -75,7 +75,7 @@ def parses(prefix):
     return inner
 
 
-def calculate_mi_vars(func):
+def calculate_mantl_vars(func):
     """calculate Mantl vars"""
 
     @wraps(func)
@@ -139,7 +139,7 @@ def parse_bool(string_form):
 
 
 @parses('digitalocean_droplet')
-@calculate_mi_vars
+@calculate_mantl_vars
 def digitalocean_host(resource, tfvars=None):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
@@ -189,7 +189,7 @@ def digitalocean_host(resource, tfvars=None):
 
 
 @parses('softlayer_virtualserver')
-@calculate_mi_vars
+@calculate_mantl_vars
 def softlayer_host(resource, module_name):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
@@ -227,7 +227,7 @@ def softlayer_host(resource, module_name):
 
 
 @parses('openstack_compute_instance_v2')
-@calculate_mi_vars
+@calculate_mantl_vars
 def openstack_host(resource, module_name):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
@@ -295,7 +295,7 @@ def openstack_host(resource, module_name):
 
 
 @parses('aws_instance')
-@calculate_mi_vars
+@calculate_mantl_vars
 def aws_host(resource, module_name):
     name = resource['primary']['attributes']['tags.Name']
     raw_attrs = resource['primary']['attributes']
@@ -364,7 +364,7 @@ def aws_host(resource, module_name):
 
 
 @parses('google_compute_instance')
-@calculate_mi_vars
+@calculate_mantl_vars
 def gce_host(resource, module_name):
     name = resource['primary']['id']
     raw_attrs = resource['primary']['attributes']
@@ -439,7 +439,7 @@ def gce_host(resource, module_name):
 
 
 @parses('vsphere_virtual_machine')
-@calculate_mi_vars
+@calculate_mantl_vars
 def vsphere_host(resource, module_name):
     raw_attrs = resource['primary']['attributes']
     network_attrs = parse_dict(raw_attrs, 'network_interface')
@@ -481,7 +481,7 @@ def vsphere_host(resource, module_name):
     return name, attrs, groups
 
 @parses('azure_instance')
-@calculate_mi_vars
+@calculate_mantl_vars
 def azure_host(resource, module_name):
     name = resource['primary']['attributes']['name']
     raw_attrs = resource['primary']['attributes']
@@ -512,19 +512,19 @@ def azure_host(resource, module_name):
         'ansible_ssh_host': raw_attrs['vip_address'],
     }
 
-    # attrs specific to microservices-infrastructure
+    # attrs specific to mantl
     attrs.update({
         'consul_dc': attrs['location'].lower().replace(" ", "-"),
         'role': attrs['description']
     })
 
-    # groups specific to microservices-infrastructure
+    # groups specific to mantl
     groups.extend(['azure_image=' + attrs['image'],
                    'azure_location=' + attrs['location'].lower().replace(" ", "-"),
                    'azure_username=' + attrs['username'],
                    'azure_security_group=' + attrs['security_group']])
 
-    # groups specific to microservices-infrastructure
+    # groups specific to mantl
     groups.append('role=' + attrs['role'])
     groups.append('dc=' + attrs['consul_dc'])
 
