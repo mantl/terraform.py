@@ -530,6 +530,44 @@ def azure_host(resource, module_name):
 
     return name, attrs, groups
 
+
+@parses('clc_server')
+@calculate_mi_vars
+def clc_server(resource, module_name):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs.get('id')
+    groups = []
+    md = parse_dict(raw_attrs, 'metadata')
+    attrs = {
+        'metadata': md,
+        'ansible_ssh_port': md.get('ssh_port', 22),
+        'ansible_ssh_user': md.get('ssh_user', 'root'),
+        'provider': 'clc',
+    }
+
+    try:
+        attrs.update({
+            'public_ipv4': raw_attrs['public_ip_address'],
+            'private_ipv4': raw_attrs['private_ip_address'],
+            'ansible_ssh_host': raw_attrs['public_ip_address'],
+            'publicly_routable': True,
+        })
+    except (KeyError, ValueError):
+        attrs.update({
+            'ansible_ssh_host': raw_attrs['private_ip_address'],
+            'private_ipv4': raw_attrs['private_ip_address'],
+        })
+
+    attrs.update({
+        'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
+        'role': attrs['metadata'].get('role', 'none'),
+    })
+
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
+    return name, attrs, groups
+
+
 ## QUERY TYPES
 def query_host(hosts, target):
     for name, attrs, _ in hosts:
