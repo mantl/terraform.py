@@ -543,6 +543,7 @@ def clc_server(resource, module_name):
         'ansible_ssh_port': md.get('ssh_port', 22),
         'ansible_ssh_user': md.get('ssh_user', 'root'),
         'provider': 'clc',
+        'publicly_routable': False,
     }
 
     try:
