@@ -27,6 +27,7 @@ reading Terraform's `.tfstate` files. It currently supports:
  - DigitalOcean ([`digitalocean_droplet`](http://terraform.io/docs/providers/do/r/droplet.html))
  - Azure ([`azure_instance`](https://www.terraform.io/docs/providers/azure/r/instance.html))
  - VMware vSphere ([`vsphere_virtual_machine`](https://www.terraform.io/docs/providers/vsphere/r/virtual_machine.html))
+ - CenturyLinkCloud ([`clc_server`](https://www.terraform.io/docs/providers/clc/r/server.html))
  - SoftLayer ([`softlayer_virtualserver`](https://github.com/finn-no/terraform-provider-softlayer)) (Unofficial)
 
 ## Installation
