@@ -150,7 +150,7 @@ def digitalocean_host(resource, tfvars=None):
         'image': raw_attrs['image'],
         'ipv4_address': raw_attrs['ipv4_address'],
         'locked': parse_bool(raw_attrs['locked']),
-        'metadata': json.loads(raw_attrs['user_data']),
+        'metadata': json.loads(raw_attrs.get('user_data', '{}')),
         'region': raw_attrs['region'],
         'size': raw_attrs['size'],
         'ssh_keys': parse_list(raw_attrs, 'ssh_keys'),
