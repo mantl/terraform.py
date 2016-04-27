@@ -161,7 +161,8 @@ def digitalocean_host(resource, tfvars=None):
         'ansible_ssh_user': 'root',  # it's always "root" on DO
         # generic
         'public_ipv4': raw_attrs['ipv4_address'],
-        'private_ipv4': raw_attrs['ipv4_address'],
+        'private_ipv4': raw_attrs.get('ipv4_address_private',
+                                      raw_attrs['ipv4_address']),
         'provider': 'digitalocean',
     }
 
