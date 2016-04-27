@@ -89,8 +89,8 @@ def test_attrs(triton_resource, triton_machine, attr, should):
     'group', ['triton_image=dd31507e-031e-11e6-be8a-8f2707b5b3ee',
               'triton_package=Medium 4GB', 'triton_state=running',
               'triton_firewall_enabled=False', 'triton_tags_role=control',
-              'triton_network=%s56f0fd52-4df1-49bd-af0c-81c717ea8bce',
-              'triton_network=%s65ae3604-7c5c-4255-9c9f-6248e5d78900',
+              'triton_network=56f0fd52-4df1-49bd-af0c-81c717ea8bce',
+              'triton_network=65ae3604-7c5c-4255-9c9f-6248e5d78900',
               'role=control', 'dc=none'],
 )
 def test_groups(triton_resource, triton_machine, group):

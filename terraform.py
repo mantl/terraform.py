@@ -197,7 +197,7 @@ def triton_machine(resource, module_name):
     groups.append('triton_firewall_enabled=%s' % attrs['firewall_enabled'])
     groups.extend('triton_tags_%s=%s' % item
                   for item in attrs['tags'].items())
-    groups.extend('triton_network=%s' + network
+    groups.extend('triton_network=' + network
                   for network in attrs['networks'])
 
     # groups specific to Mantl
