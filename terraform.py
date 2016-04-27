@@ -533,7 +533,7 @@ def azure_host(resource, module_name):
 
 
 @parses('clc_server')
-@calculate_mi_vars
+@calculate_mantl_vars
 def clc_server(resource, module_name):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs.get('id')
