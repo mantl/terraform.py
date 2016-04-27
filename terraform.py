@@ -138,6 +138,75 @@ def parse_bool(string_form):
         raise ValueError('could not convert %r to a bool' % string_form)
 
 
+@parses('triton_machine')
+@calculate_mantl_vars
+def triton_machine(resource, module_name):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs.get('name')
+    groups = []
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'dataset': raw_attrs['dataset'],
+        'disk': raw_attrs['disk'],
+        'firewall_enabled': parse_bool(raw_attrs['firewall_enabled']),
+        'image': raw_attrs['image'],
+        'ips': parse_list(raw_attrs, 'ips'),
+        'memory': raw_attrs['memory'],
+        'name': raw_attrs['name'],
+        'networks': parse_list(raw_attrs, 'networks'),
+        'package': raw_attrs['package'],
+        'primary_ip': raw_attrs['primaryip'],
+        'root_authorized_keys': raw_attrs['root_authorized_keys'],
+        'state': raw_attrs['state'],
+        'tags': parse_dict(raw_attrs, 'tags'),
+        'type': raw_attrs['type'],
+        'user_data': raw_attrs['user_data'],
+        'user_script': raw_attrs['user_script'],
+
+        # ansible
+        'ansible_ssh_host': raw_attrs['primaryip'],
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': 'root',  # it's "root" on Triton by default
+
+        # generic
+        'public_ipv4': raw_attrs['primaryip'],
+        'provider': 'triton',
+    }
+
+    # private IPv4
+    for ip in attrs['ips']:
+        if ip.startswith('10') or ip.startswith('192.168'): # private IPs
+            attrs['private_ipv4'] = ip
+            break
+
+    if 'private_ipv4' not in attrs:
+        attrs['private_ipv4'] = attrs['public_ipv4']
+
+    # attrs specific to Mantl
+    attrs.update({
+        'consul_dc': _clean_dc(attrs['tags'].get('dc', 'none')),
+        'role': attrs['tags'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['tags'].get('python_bin', 'python')
+    })
+
+    # add groups based on attrs
+    groups.append('triton_image=' + attrs['image'])
+    groups.append('triton_package=' + attrs['package'])
+    groups.append('triton_state=' + attrs['state'])
+    groups.append('triton_firewall_enabled=%s' % attrs['firewall_enabled'])
+    groups.extend('triton_tags_%s=%s' % item
+                  for item in attrs['tags'].items())
+    groups.extend('triton_network=%s' + network
+                  for network in attrs['networks'])
+
+    # groups specific to Mantl
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
+
+
 @parses('digitalocean_droplet')
 @calculate_mantl_vars
 def digitalocean_host(resource, tfvars=None):
@@ -568,6 +637,7 @@ def clc_server(resource, module_name):
     groups.append('role=' + attrs['role'])
     groups.append('dc=' + attrs['consul_dc'])
     return name, attrs, groups
+
 
 
 ## QUERY TYPES
