@@ -17,7 +17,7 @@ def gce_resource():
             "id": "mi-control-01",
             "attributes": {
                 "can_ip_forward": "false",
-                "description": "microservices-infrastructure control node #01",
+                "description": "mantl control node #01",
                 "disk.#": "1",
                 "disk.0.auto_delete": "true",
                 "disk.0.device_name": "",
@@ -40,7 +40,7 @@ def gce_resource():
                 "network_interface.0.access_config.0.nat_ip": "104.197.63.156",
                 "network_interface.0.address": "10.0.237.130",
                 "network_interface.0.name": "nic0",
-                "network_interface.0.network": "microservices-infrastructure",
+                "network_interface.0.network": "mantl",
                 "self_link":
                 "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a/instances/mi-control-01",
                 "service_account.#": "0",
@@ -78,7 +78,7 @@ def test_name(gce_resource, gce_host):
      'sshKeys': 'fake ssh key', },
     'network': [],
     'network_interface': [{
-        'network': 'microservices-infrastructure',
+        'network': 'mantl',
         'access_config': [{'nat_ip': '104.197.63.156'}],
         'address': '10.0.237.130',
         'name': 'nic0'
