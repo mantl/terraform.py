@@ -590,7 +590,7 @@ def ucs_host(resource, module_name):
 
     try:
         attrs.update({
-            'ansbible_ssh_host': raw_attrs['vNIC.0.ip'],
+            'ansible_ssh_host': raw_attrs['vNIC.0.ip'],
             'public_ipv4': raw_attrs['vNIC.0.ip'],
             'private_ipv4': raw_attrs['vNIC.0.ip']
         })
