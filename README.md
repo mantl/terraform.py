@@ -61,8 +61,8 @@ Or in a playbook:
 ## Releases
 
 `terraform.py` is with matching versions of
-[microservices-infrastructure](https://github.com/CiscoCloud/microservices-infrastructure).
-Run `terraform.py --version` to report the current version.
+[mantl](https://github.com/CiscoCloud/mantl). Run `terraform.py --version` to
+report the current version.
 
 ## Adding a new provider
 
@@ -73,7 +73,7 @@ calls them.) A parser is a function that takes a resource (a dictionary
 processed from JSON) and outputs a tuple of `(name, attributes, groups)`. The
 parser should be decorated with the `parses` decorator, which takes the name of
 the resource (EG `aws_instance`). It should also be decorated with
-`calculate_mi_vars`.
+`calculate_mantl_vars`.
 
 As a guideline, `terraform.py` should require no resources outside the Python
 standard distribution so it can just be copied in wherever it's needed.
@@ -121,13 +121,13 @@ a list. Given keys like this and the prefix "keys":
 
     ...
     "tags.#": "2",
-    "tags.2783239913": "mi",
+    "tags.2783239913": "mantl",
     "tags.3990563915": "control",
     ...
 
 `parse_list` would return this:
 
-    ["mi", "control"]
+    ["mantl", "control"]
 
 ## License
 
