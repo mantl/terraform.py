@@ -29,6 +29,7 @@ reading Terraform's `.tfstate` files. It currently supports:
  - VMware vSphere ([`vsphere_virtual_machine`](https://www.terraform.io/docs/providers/vsphere/r/virtual_machine.html))
  - CenturyLinkCloud ([`clc_server`](https://www.terraform.io/docs/providers/clc/r/server.html))
  - SoftLayer ([`softlayer_virtualserver`](https://github.com/finn-no/terraform-provider-softlayer)) (Unofficial)
+ - Dimension Data CloudControl ([`ddcloud_server`](https://github.com/DimensionDataResearch/https://github.com/DimensionDataResearch/dd-cloud-compute-terraform)) (Unofficial)
 
 ## Installation
 
