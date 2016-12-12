@@ -262,6 +262,60 @@ def triton_machine(resource, module_name):
     return name, attrs, groups
 
 
+@parses('packet_device')
+@calculate_mantl_vars
+def packet_device(resource, tfvars=None):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs['id']
+    groups = []
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'facility': raw_attrs['facility'],
+        'hostname': raw_attrs['hostname'],
+        'operating_system': raw_attrs['operating_system'],
+        'locked': parse_bool(raw_attrs['locked']),
+        'metadata': json.loads(raw_attrs.get('user_data', '{}')),
+        'plan': raw_attrs['plan'],
+        'project_id': raw_attrs['project_id'],
+        'state': raw_attrs['state'],
+        # ansible
+        'ansible_ssh_host': raw_attrs['network.0.address'],
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': 'root',  # it's always "root" on Packet
+        # generic
+        'ipv4_address': raw_attrs['network.0.address'],
+        'public_ipv4': raw_attrs['network.0.address'],
+        'ipv6_address': raw_attrs['network.1.address'],
+        'public_ipv6': raw_attrs['network.1.address'],
+        'private_ipv4': raw_attrs['network.2.address'],
+        'provider': 'packet',
+    }
+
+    # attrs specific to Mantl
+    attrs.update({
+        'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['facility'])),
+        'role': attrs['metadata'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
+    })
+
+    # add groups based on attrs
+    groups.append('packet_facility=' + attrs['facility'])
+    groups.append('packet_operating_system=' + attrs['operating_system'])
+    groups.append('packet_locked=%s' % attrs['locked'])
+    groups.append('packet_state=' + attrs['state'])
+    groups.append('packet_plan=' + attrs['plan'])
+    groups.extend('packet_metadata_%s=%s' % item
+                  for item in attrs['metadata'].items())
+
+    # groups specific to Mantl
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
+
+
 @parses('digitalocean_droplet')
 @calculate_mantl_vars
 def digitalocean_host(resource, tfvars=None):
