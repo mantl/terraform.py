@@ -45,7 +45,7 @@ def iterresources(filenames):
                 for key, resource in module['resources'].items():
                     yield name, key, resource
 
-## READ RESOURCES
+# READ RESOURCES
 PARSERS = {}
 
 
@@ -231,7 +231,7 @@ def triton_machine(resource, module_name):
 
     # private IPv4
     for ip in attrs['ips']:
-        if ip.startswith('10') or ip.startswith('192.168'): # private IPs
+        if ip.startswith('10') or ip.startswith('192.168'):  # private IPs
             attrs['private_ipv4'] = ip
             break
 
@@ -294,7 +294,8 @@ def digitalocean_host(resource, tfvars=None):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # add groups based on attrs
@@ -342,7 +343,8 @@ def softlayer_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # groups specific to Mantl
@@ -402,7 +404,8 @@ def openstack_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # add groups based on attrs
@@ -473,7 +476,8 @@ def aws_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['tags'].get('dc', module_name)),
         'role': attrs['tags'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['tags'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['tags']
+        .get('python_bin', 'python')
     })
 
     # groups specific to Mantl
@@ -534,13 +538,16 @@ def gce_host(resource, module_name):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     try:
         attrs.update({
-            'ansible_ssh_host': interfaces[0]['access_config'][0]['nat_ip'] or interfaces[0]['access_config'][0]['assigned_nat_ip'],
-            'public_ipv4': interfaces[0]['access_config'][0]['nat_ip'] or interfaces[0]['access_config'][0]['assigned_nat_ip'],
+            'ansible_ssh_host': interfaces[0]['access_config'][0]['nat_ip'] or
+            interfaces[0]['access_config'][0]['assigned_nat_ip'],
+            'public_ipv4': interfaces[0]['access_config'][0]['nat_ip'] or
+            interfaces[0]['access_config'][0]['assigned_nat_ip'],
             'private_ipv4': interfaces[0]['address'],
             'publicly_routable': True,
         })
@@ -595,9 +602,11 @@ def vsphere_host(resource, module_name):
         attrs.update({'ansible_ssh_host': '', })
 
     attrs.update({
-        'consul_dc': _clean_dc(attrs['metadata'].get('consul_dc', module_name)),
+        'consul_dc': _clean_dc(attrs['metadata']
+                               .get('consul_dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # attrs specific to Ansible
@@ -630,6 +639,7 @@ def azurerm_host(resource, module_name):
     groups.append('role=' + raw_attrs.get('tags.role', ''))
 
     return name, attrs, groups
+
 
 @parses('azure_instance')
 @calculate_mantl_vars
@@ -674,7 +684,8 @@ def azure_host(resource, module_name):
 
     # groups specific to mantl
     groups.extend(['azure_image=' + attrs['image'],
-                   'azure_location=' + attrs['location'].lower().replace(" ", "-"),
+                   'azure_location=' + attrs['location']
+                   .lower().replace(" ", "-"),
                    'azure_username=' + attrs['username'],
                    'azure_security_group=' + attrs['security_group']])
 
@@ -754,14 +765,15 @@ def ucs_host(resource, module_name):
         attrs.update({'ansible_ssh_host': '', 'publicly_routable': False})
 
     # add groups based on attrs
-    groups.append('role=' + attrs['role']) #.get('role', 'none'))
+    groups.append('role=' + attrs['role'])  # .get('role', 'none'))
 
     # groups.append('all:children')
     groups.append('dc=' + attrs['consul_dc'])
 
     return name, attrs, groups
 
-## QUERY TYPES
+
+# QUERY TYPES
 def query_host(hosts, target):
     for name, attrs, _ in hosts:
         if name == target:
@@ -818,8 +830,9 @@ def main():
                         action='store_true',
                         help='with --list, exclude hostvars')
     default_root = os.environ.get('TERRAFORM_STATE_ROOT',
-                                  os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                               '..', '..', )))
+                                  os.path.abspath(
+                                      os.path.join(os.path.dirname(__file__),
+                                                   '..', '..', )))
     parser.add_argument('--root',
                         default=default_root,
                         help='custom root to search for `.tfstate`s in')
