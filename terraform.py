@@ -408,6 +408,12 @@ def aws_host(resource, module_name):
     if 'tags.sshPrivateIp' in raw_attrs:
         attrs['ansible_ssh_host'] = raw_attrs['private_ip']
 
+    # add to groups by comma separated tag(s)
+    if 'tags.groups' in raw_attrs:
+        for group in raw_attrs['tags.groups'].split(','):
+            groups.append(group)
+
+
     # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['tags'].get('dc', module_name)),
