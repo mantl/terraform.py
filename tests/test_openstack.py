@@ -71,7 +71,6 @@ def test_name(openstack_resource, openstack_host):
     'region': 'eu-amsterdam-1',
     'security_groups': ['default'],
     # ansible
-    'ansible_ssh_port': 22,
     'ansible_ssh_host': '173.39.243.27',
     'publicly_routable': True,
     # mi

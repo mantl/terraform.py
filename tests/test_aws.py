@@ -87,7 +87,6 @@ def test_name(aws_resource, aws_host):
     'vpc_security_group_ids': ['sg-9c360cf8', 'sg-9d360cf9'],
     # ansible
     'ansible_ssh_host': '52.7.74.115',
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'ec2-user',
     # mi
     'consul_dc': 'aws',

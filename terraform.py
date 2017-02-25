@@ -573,6 +573,10 @@ def azure_host(resource, module_name):
         'ansible_ssh_user': raw_attrs['username'],
         'ansible_ssh_host': raw_attrs['vip_address'],
     }
+    
+    for ep in attrs['endpoint']:
+        if ep['name'] == 'SSH':
+            attrs['ansible_ssh_port'] = int(ep['public_port'])
 
     # attrs specific to mantl
     attrs.update({
