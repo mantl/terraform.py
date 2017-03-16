@@ -26,6 +26,7 @@ reading Terraform's `.tfstate` files. It currently supports:
  - Openstack ([`openstack_compute_instance_v2`'](https://www.terraform.io/docs/providers/openstack/r/compute_instance_v2.html))
  - DigitalOcean ([`digitalocean_droplet`](http://terraform.io/docs/providers/do/r/droplet.html))
  - Azure ([`azure_instance`](https://www.terraform.io/docs/providers/azure/r/instance.html))
+ - AzureRM ([`azure_virtual_machine`](https://www.terraform.io/docs/providers/azurerm/r/virtual_machine.html))
  - VMware vSphere ([`vsphere_virtual_machine`](https://www.terraform.io/docs/providers/vsphere/r/virtual_machine.html))
  - CenturyLinkCloud ([`clc_server`](https://www.terraform.io/docs/providers/clc/r/server.html))
  - SoftLayer ([`softlayer_virtualserver`](https://github.com/finn-no/terraform-provider-softlayer)) (Unofficial)
@@ -43,10 +44,18 @@ place on your filesystem should do the trick.
 Make sure that you've annotated your resources with "tags" that correspond to the sshUser for the machine.
 
 Example, for EC2 resources, add a [tags](https://www.terraform.io/docs/providers/aws/r/instance.html#tags) entry of "sshUser" equal to "ec2-user":
-	
+
 	tags {
       Name = "cheese"
       sshUser = "ec2-user"
+    }
+
+Example, for AzureRM resources, add [tags](https://www.terraform.io/docs/providers/azurerm/r/virtual_machine.html#tags) entries for ssh_user, role and ssh_ip based on the [Network Interface](https://www.terraform.io/docs/providers/azurerm/r/network_interface.html) you plan to access the instance from:
+
+    tags {
+        ssh_user = "azurerm-user"
+        ssh_ip = "${azurerm_network_interface.my_nic.private_ip_address}"
+        role = "myrole"
     }
 
 Next, specify `terraform.py` as an inventory source for any Ansible command. For
