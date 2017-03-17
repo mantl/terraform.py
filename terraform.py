@@ -553,7 +553,7 @@ def vsphere_host(resource, module_name):
 
 @parses('azurerm_virtual_machine')
 @calculate_mantl_vars
-def azure_host(resource, module_name):
+def azurerm_host(resource, module_name):
     name = resource['primary']['attributes']['name']
     raw_attrs = resource['primary']['attributes']
 
