@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import boto3
+import json
+
 from ati.errors import WrongRemoteError, InvalidRemoteError
+
 
 def get_remote_state(
         bucket_name : str,
@@ -13,8 +17,14 @@ def get_remote_state(
     Args:
         state_file: The name of the statefile in the bucket
     """
+    aws_session = boto3.Session(profile_name=profile_name)
+    s3 = aws_session.client('s3')
 
-    return {}
+    rs_obj = s3.Object(bucket_name=bucket_name, key=key_name)
+    resp = rs_obj.get()
+    
+    return json.loads(resp['Body'].read())
+
 
 
 def is_remote_state(tfstate : dict) -> bool:
