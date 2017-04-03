@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def gce_host():
-    from terraform import gce_host
+    from ati.terraform import gce_host
     return gce_host
 
 

@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def triton_machine():
-    from terraform import triton_machine
+    from ati.terraform import triton_machine
     return triton_machine
 
 

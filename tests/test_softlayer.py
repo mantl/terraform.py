@@ -3,7 +3,7 @@ import pytest
 
 @pytest.fixture
 def softlayer_host():
-    from terraform import softlayer_host
+    from ati.terraform import softlayer_host
     return softlayer_host
 
 @pytest.fixture

@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def aws_host():
-    from terraform import aws_host
+    from ati.terraform import aws_host
     return aws_host
 
 
