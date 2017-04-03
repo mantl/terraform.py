@@ -27,6 +27,8 @@ import re
 
 VERSION = '0.3.0pre'
 
+def test_install():
+    print("Ok, I guess it did work")
 
 def tfstates(root=None):
     root = root or os.getcwd()
