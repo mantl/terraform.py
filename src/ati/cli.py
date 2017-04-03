@@ -3,7 +3,7 @@ import json
 import os
 
 from ati import __name__, __version__ 
-from terraform import iterhosts, iterresources, query_host, query_hostfile, query_list, tfstates
+from ati.terraform import get_stage_root, iterhosts, iterresources, query_host, query_hostfile, query_list, tfstates
 
 def cli():
     parser = argparse.ArgumentParser(
@@ -34,6 +34,10 @@ def cli():
                         help='custom root to search for `.tfstate`s in')
 
     args = parser.parse_args()
+
+    staged_root = get_stage_root(root=args.root)
+    if staged_root != args.root:
+        args.root = staged_root
 
     if args.version:
         print('{} {}s'.format(__name__, __version__))
