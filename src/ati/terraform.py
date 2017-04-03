@@ -41,7 +41,23 @@ def iterresources(filenames):
                 for key, resource in module['resources'].items():
                     yield name, key, resource
 
-# READ RESOURCES
+
+def get_stage_root(tf_dirname=None, root=None):
+    """ look for a matching terraform root directory """
+    root = root or os.getcwd()
+    tf_dirname = tf_dirname or 'terraform'
+    inv_dir = os.path.dirname(__file__).split(os.path.sep)[-1]
+    try:
+        terraform_base = os.path.join(root, tf_dirname)
+        if inv_dir in os.listdir(terraform_base):
+            return os.path.join(terraform_base, inv_dir)
+        else:
+            return root
+    except OSError:
+        return root
+
+
+## READ RESOURCES
 PARSERS = {}
 
 
