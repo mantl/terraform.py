@@ -3,7 +3,6 @@
 # batteries included
 from __future__ import absolute_import
 
-import io
 from glob import glob
 from os.path import basename, splitext
 
