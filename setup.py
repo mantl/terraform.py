@@ -21,11 +21,10 @@ test_requirements = [
     'pytest>=2.9.2,<3',
     'pytest-cov>=2.4.0,<3',
     'pytest-flakes>=1.0.1,<2',
-    'pytest-mccabe>=0.0.1,<2']
-
+    'pytest-mccabe>=0.0.1,<2',
+    'moto>=0.4.31,<1']
 debug_requirements = [
     'pdbpp>=0.8.3,<1']
-
 dev_requirements = (
     doc_requirements +
     test_requirements +

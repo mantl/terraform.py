@@ -17,7 +17,7 @@
 Dynamic inventory for Terraform - finds all `.tfstate` files below the working
 directory and generates an inventory based on them.
 """
-from __future__ import unicode_literals, print_function
+
 from collections import defaultdict
 from functools import wraps
 import json
@@ -38,7 +38,7 @@ def iterresources(filenames):
             state = json.load(json_file)
             for module in state['modules']:
                 name = module['path'][-1]
-                for key, resource in module['resources'].items():
+                for key, resource in list(module['resources'].items()):
                     yield name, key, resource
 
 
@@ -110,7 +110,7 @@ def calculate_mantl_vars(func):
 
 
 def _parse_prefix(source, prefix, sep='.'):
-    for compkey, value in source.items():
+    for compkey, value in list(source.items()):
         try:
             curprefix, rest = compkey.split(sep, 1)
         except ValueError:
@@ -128,7 +128,7 @@ def parse_attr_list(source, prefix, sep='.'):
         idx, key = compkey.split(sep, 1)
         attrs[idx][key] = value
 
-    return attrs.values()
+    return list(attrs.values())
 
 
 def parse_dict(source, prefix, sep='.'):
@@ -208,7 +208,7 @@ def triton_machine(resource, module_name):
     groups.append('triton_state=' + attrs['state'])
     groups.append('triton_firewall_enabled=%s' % attrs['firewall_enabled'])
     groups.extend('triton_tags_%s=%s' % item
-                  for item in attrs['tags'].items())
+                  for item in list(attrs['tags'].items()))
     groups.extend('triton_network=' + network
                   for network in attrs['networks'])
 
@@ -261,7 +261,7 @@ def digitalocean_host(resource, tfvars=None):
     groups.append('do_size=' + attrs['size'])
     groups.append('do_status=' + attrs['status'])
     groups.extend('do_metadata_%s=%s' % item
-                  for item in attrs['metadata'].items())
+                  for item in list(attrs['metadata'].items()))
 
     # groups specific to Mantl
     groups.append('role=' + attrs['role'])
@@ -366,7 +366,7 @@ def openstack_host(resource, module_name):
     groups.append('os_image=' + attrs['image']['name'])
     groups.append('os_flavor=' + attrs['flavor']['name'])
     groups.extend('os_metadata_%s=%s' % item
-                  for item in attrs['metadata'].items())
+                  for item in list(attrs['metadata'].items()))
     groups.append('os_region=' + attrs['region'])
 
     # groups specific to Mantl
@@ -432,11 +432,11 @@ def aws_host(resource, module_name):
                    'aws_az=' + attrs['availability_zone'],
                    'aws_key_name=' + attrs['key_name'],
                    'aws_tenancy=' + attrs['tenancy']])
-    groups.extend('aws_tag_%s=%s' % item for item in attrs['tags'].items())
+    groups.extend('aws_tag_%s=%s' % item for item in list(attrs['tags'].items()))
     groups.extend('aws_vpc_security_group=' + group
                   for group in attrs['vpc_security_group_ids'])
     groups.extend('aws_subnet_%s=%s' % subnet
-                  for subnet in attrs['subnet'].items())
+                  for subnet in list(attrs['subnet'].items()))
 
     # groups specific to Mantl
     groups.append('role=' + attrs['role'])
@@ -457,7 +457,7 @@ def gce_host(resource, module_name):
     for interface in interfaces:
         interface['access_config'] = parse_attr_list(interface,
                                                      'access_config')
-        for key in interface.keys():
+        for key in list(interface.keys()):
             if '.' in key:
                 del interface[key]
 
@@ -503,7 +503,7 @@ def gce_host(resource, module_name):
     groups.extend('gce_image=' + disk['image'] for disk in attrs['disks'])
     groups.append('gce_machine_type=' + attrs['machine_type'])
     groups.extend('gce_metadata_%s=%s' % (key, value)
-                  for (key, value) in attrs['metadata'].items()
+                  for (key, value) in list(attrs['metadata'].items())
                   if key not in set(['sshKeys']))
     groups.extend('gce_tag=' + tag for tag in attrs['tags'])
     groups.append('gce_zone=' + attrs['zone'])
