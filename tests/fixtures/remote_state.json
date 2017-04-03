@@ -1,0 +1,69 @@
+{
+    "version": 3,
+    "terraform_version": "0.9.1",
+    "serial": 4,
+    "lineage": "6d899fb4-850b-48d1-9eeb-ea4bfe9bd8b0",
+    "modules": [
+        {
+            "path": [
+                "root"
+            ],
+            "outputs": {},
+            "resources": {
+                "aws_instance.instance": {
+                    "type": "aws_instance",
+                    "depends_on": [
+                        "module.test_vpc",
+                        "module.test_vpc"
+                    ],
+                    "primary": {
+                        "id": "i-000bfe5e02b29000e",
+                        "attributes": {
+                            "ami": "ami-f4cc1de2",
+                            "associate_public_ip_address": "true",
+                            "availability_zone": "us-east-1d",
+                            "disable_api_termination": "false",
+                            "ebs_block_device.#": "0",
+                            "ebs_optimized": "false",
+                            "ephemeral_block_device.#": "0",
+                            "iam_instance_profile": "",
+                            "id": "i-000bfe5e02b29000e",
+                            "instance_state": "running",
+                            "instance_type": "t2.micro",
+                            "ipv6_address_count": "0",
+                            "ipv6_addresses.#": "0",
+                            "key_name": "test_key",
+                            "monitoring": "false",
+                            "network_interface_id": "eni-c950570f",
+                            "private_dns": "ip-10-10-6-111.ec2.internal",
+                            "private_ip": "10.10.6.111",
+                            "public_dns": "ec2-34-204-71-111.compute-1.amazonaws.com",
+                            "public_ip": "34.204.71.111",
+                            "root_block_device.#": "1",
+                            "root_block_device.0.delete_on_termination": "true",
+                            "root_block_device.0.iops": "0",
+                            "root_block_device.0.volume_size": "40",
+                            "root_block_device.0.volume_type": "standard",
+                            "security_groups.#": "0",
+                            "source_dest_check": "true",
+                            "subnet_id": "subnet-111c3000",
+                            "tags.%": "2",
+                            "tags.Name": "test_instance",
+                            "tags.role": "instance",
+                            "tenancy": "default",
+                            "vpc_security_group_ids.#": "1",
+                            "vpc_security_group_ids.1467093674": "sg-dc5d0000"
+                        },
+                        "meta": {
+                            "schema_version": "1"
+                        },
+                        "tainted": false
+                    },
+                    "deposed": [],
+                    "provider": ""
+                }
+            },
+            "depends_on": []
+        }
+    ]
+}
