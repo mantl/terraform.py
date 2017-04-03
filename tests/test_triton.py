@@ -58,7 +58,7 @@ def test_name(triton_resource, triton_machine):
     'image': 'dd31507e-031e-11e6-be8a-8f2707b5b3ee',
     'ips': ['10.112.7.149', '165.225.136.36'],
     'name': 'mantl-control-01',
-    'networks': ['56f0fd52-4df1-49bd-af0c-81c717ea8bce', '65ae3604-7c5c-4255-9c9f-6248e5d78900'],
+    'networks': ['65ae3604-7c5c-4255-9c9f-6248e5d78900', '56f0fd52-4df1-49bd-af0c-81c717ea8bce'],
     'package': 'Medium 4GB',
     'primary_ip': '165.225.136.36',
     'root_authorized_keys': 'key text replaced for test',
@@ -81,7 +81,10 @@ def test_name(triton_resource, triton_machine):
 def test_attrs(triton_resource, triton_machine, attr, should):
     _, attrs, _ = triton_machine(triton_resource, 'module_name')
     assert attr in attrs
-    assert attrs[attr] == should
+    if type(attrs[attr]) == list:
+        sorted(attrs[attr]) == sorted(should)
+    else:
+        assert attrs[attr]  == should
 
 
 @pytest.mark.parametrize(
@@ -94,5 +97,5 @@ def test_attrs(triton_resource, triton_machine, attr, should):
 )
 def test_groups(triton_resource, triton_machine, group):
     _, _, groups = triton_machine(triton_resource, 'module_name')
-    print groups
+    print(groups)
     assert group in groups

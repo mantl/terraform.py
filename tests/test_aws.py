@@ -98,7 +98,10 @@ def test_name(aws_resource, aws_host):
 def test_attrs(aws_resource, aws_host, attr, should):
     _, attrs, _ = aws_host(aws_resource, 'module_name')
     assert attr in attrs
-    assert attrs[attr] == should
+    if type(attrs[attr]) == list:
+        assert sorted(attrs[attr]) == sorted(should)
+    else:
+        assert attrs[attr] == should
 
 
 @pytest.mark.parametrize(
