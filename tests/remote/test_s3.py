@@ -1,12 +1,29 @@
 # -*- coding: utf-8 -*-
+import os
+
 import boto3
 import json
+
 from moto import mock_s3
 
 from ati.remote import s3_remote_state as s3rs
 
+
+mock_creds = """
+[testawsprofile]
+aws_access_key_id = AKIATTTTTTRPCTTTTTTT
+aws_secret_access_key = TTTTTTFKj6aTTTTTTg4fdRBjcAzSD2TTTTTTx+ds
+"""
+
+
 @mock_s3
-def test_get_remote_state():
+def test_get_remote_state(tmpdir, monkeypatch):
+    def mockcredentials(path):
+        mockcredsfile = tmpdir.mkdir("aws").join("credentials")
+        mockcredsfile.write(mock_creds)
+
+        return mockcredsfile
+
     conn = boto3.client('s3', region_name='us-east-1')
     with open('tests/fixtures/remote_init.json', 'r') as f:
         local_init_state = json.load(f)
@@ -17,6 +34,7 @@ def test_get_remote_state():
 
     conn.create_bucket(Bucket=bucket_name)
 
+    monkeypatch.setattr(os.path, 'expanduser', mockcredentials)
     with open('tests/fixtures/remote_state.json', 'r') as f:
         remote_state_contents = f.read()
 
@@ -24,6 +42,8 @@ def test_get_remote_state():
             Bucket=bucket_name,
             Key=key_name,
             Body=remote_state_contents)
+
+
 
     remote_state_dict = s3rs.get_remote_state(bucket_name, key_name, profile_name)
     assert remote_state_dict == json.loads(remote_state_contents)
