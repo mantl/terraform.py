@@ -34,7 +34,6 @@ def test_get_remote_state(monkeypatch, mockcredentials):
 
     bucket_name = local_init_state['backend']['config']['bucket']
     key_name = local_init_state['backend']['config']['key']
-    profile_name = local_init_state['backend']['config']['profile']
 
     conn.create_bucket(Bucket=bucket_name)
 
@@ -49,21 +48,6 @@ def test_get_remote_state(monkeypatch, mockcredentials):
 
 
 
-    remote_state_dict = s3rs.get_remote_state(bucket_name, key_name, profile_name)
+    remote_state_dict = s3rs.get_remote_state(local_init_state)
     assert remote_state_dict == json.loads(remote_state_contents)
     
-
-
-def test_is_remote_state():
-    tf = None
-    with open('tests/fixtures/remote_init.json', 'r') as f:
-        tf = json.load(f)
-
-    assert s3rs.is_remote_state(tf)
-
-def test_not_remote_state():
-    tf = None
-    with open('tests/fixtures/local_init.json', 'r') as f:
-        tf = json.load(f)
-
-    assert not s3rs.is_remote_state(tf)
