@@ -3,6 +3,7 @@ import os
 
 import boto3
 import json
+import pytest
 
 from moto import mock_s3
 
@@ -15,14 +16,17 @@ aws_access_key_id = AKIATTTTTTRPCTTTTTTT
 aws_secret_access_key = TTTTTTFKj6aTTTTTTg4fdRBjcAzSD2TTTTTTx+ds
 """
 
+@pytest.fixture(scope='session')
+def mockcredentials(tmpdir_factory):
+    mockcredsfile = tmpdir_factory.mktemp("aws").join("credentials")
+    mockcredsfile.write(mock_creds)
+    return mockcredsfile
+
 
 @mock_s3
-def test_get_remote_state(tmpdir, monkeypatch):
-    def mockcredentials(path):
-        mockcredsfile = tmpdir.mkdir("aws").join("credentials")
-        mockcredsfile.write(mock_creds)
-
-        return mockcredsfile
+def test_get_remote_state(monkeypatch, mockcredentials):
+    def mockcreds(path):
+        return mockcredentials.strpath
 
     conn = boto3.client('s3', region_name='us-east-1')
     with open('tests/fixtures/remote_init.json', 'r') as f:
@@ -34,7 +38,7 @@ def test_get_remote_state(tmpdir, monkeypatch):
 
     conn.create_bucket(Bucket=bucket_name)
 
-    monkeypatch.setattr(os.path, 'expanduser', mockcredentials)
+    monkeypatch.setattr(os.path, 'expanduser', mockcreds)
     with open('tests/fixtures/remote_state.json', 'r') as f:
         remote_state_contents = f.read()
 
