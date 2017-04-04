@@ -678,6 +678,40 @@ def ucs_host(resource, module_name):
 
     return name, attrs, groups
 
+@parses('scaleway_server')
+def scaleway_host(resource, tfvars=None):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs['name']
+    groups = []
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'image': raw_attrs['image'],
+        'private_ip': raw_attrs['private_ip'],
+        'public_ip': raw_attrs['public_ip'],
+        'state': raw_attrs['state'],
+        'tags': parse_list(raw_attrs, 'tags'),
+        'type': raw_attrs['type'],
+        # ansible
+        'ansible_ssh_host': raw_attrs['public_ip'],
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': 'root',  # it's always "root" on DO
+        # generic
+        'public_ipv4': raw_attrs['public_ip'],
+        'private_ipv4': raw_attrs['private_ip'],
+        'provider': 'scaleway',
+    }
+
+    # add groups based on attrs
+    groups.append('scaleway_image=' + attrs['image'])
+    groups.append('scaleway_type=' + attrs['type'])
+    groups.append('scaleway_state=' + attrs['state'])
+    groups.extend('scaleway_tag=%s' % item
+                  for item in attrs['tags'])
+
+    return name, attrs, groups
+
+
 ## QUERY TYPES
 def query_host(hosts, target):
     for name, attrs, _ in hosts:
