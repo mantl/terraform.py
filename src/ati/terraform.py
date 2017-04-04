@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # Copyright 2015 Cisco Systems, Inc.
 #
@@ -24,6 +23,8 @@ import json
 import os
 import re
 
+import ati.remote
+
 def tfstates(root=None):
     root = root or os.getcwd()
     for dirpath, _, filenames in os.walk(root):
@@ -36,6 +37,9 @@ def iterresources(filenames):
     for filename in filenames:
         with open(filename, 'r') as json_file:
             state = json.load(json_file)
+            remote_state_func = ati.remote.get_remote_func(state)
+            if remote_state_func is not None:
+                state = remote_state_func(state)
             for module in state['modules']:
                 name = module['path'][-1]
                 for key, resource in list(module['resources'].items()):
