@@ -20,10 +20,9 @@ def get_remote_state(
     aws_session = boto3.Session(profile_name=profile_name)
     s3 = aws_session.client('s3')
 
-    rs_obj = s3.Object(bucket_name=bucket_name, key=key_name)
-    resp = rs_obj.get()
+    rs_obj = s3.get_object(Bucket=bucket_name, Key=key_name)
     
-    return json.loads(resp['Body'].read())
+    return json.loads(rs_obj['Body'].read().decode('utf-8'))
 
 
 
