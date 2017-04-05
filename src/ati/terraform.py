@@ -49,12 +49,13 @@ def iterresources(filenames):
 def get_stage_root(tf_dirname=None, root=None):
     """ look for a matching terraform root directory """
     root = root or os.getcwd()
+    ansible_dir = os.getcwd()
     tf_dirname = tf_dirname or 'terraform'
-    inv_dir = os.path.dirname(__file__).split(os.path.sep)[-1]
+    inv_name = root.split(os.path.sep)[-1]
     try:
-        terraform_base = os.path.join(root, tf_dirname)
-        if inv_dir in os.listdir(terraform_base):
-            return os.path.join(terraform_base, inv_dir)
+        terraform_base = os.path.join(ansible_dir, tf_dirname)
+        if inv_name in os.listdir(terraform_base):
+            return os.path.join(terraform_base, inv_name)
         else:
             return root
     except OSError:
@@ -382,8 +383,12 @@ def openstack_host(resource, module_name):
 
 @parses('aws_instance')
 @calculate_mantl_vars
-def aws_host(resource, module_name):
-    name = resource['primary']['attributes']['tags.Name']
+def aws_host(
+        resource,
+        module_name,
+        name_field='private_ip',
+        ssh_host_field='private_ip'):
+    name = resource['primary']['attributes'][name_field]
     raw_attrs = resource['primary']['attributes']
 
     groups = []
@@ -411,7 +416,7 @@ def aws_host(resource, module_name):
                                              'vpc_security_group_ids'),
         # ansible-specific
         'ansible_ssh_port': 22,
-        'ansible_ssh_host': raw_attrs['public_ip'],
+        'ansible_ssh_host': raw_attrs[ssh_host_field],
         # generic
         'public_ipv4': raw_attrs['public_ip'],
         'private_ipv4': raw_attrs['private_ip'],
