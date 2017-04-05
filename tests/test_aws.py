@@ -49,7 +49,7 @@ def aws_resource():  # noqa
 
 def test_name(aws_resource, aws_host):
     name, _, _ = aws_host(aws_resource, '')
-    assert name == 'mi-control-01'
+    assert name == '10.0.152.191'
 
 
 @pytest.mark.parametrize('attr,should', {
@@ -86,7 +86,8 @@ def test_name(aws_resource, aws_host):
     'tenancy': 'default',
     'vpc_security_group_ids': ['sg-9c360cf8', 'sg-9d360cf9'],
     # ansible
-    'ansible_ssh_host': '52.7.74.115',
+    'ansible_ssh_host': '10.0.152.191',
+    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'ec2-user',
     # mi
     'consul_dc': 'aws',
