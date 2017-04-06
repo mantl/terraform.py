@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ati.errors import InvalidRemoteError
 
 from ati.remote import s3_remote_state
