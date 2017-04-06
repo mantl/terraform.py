@@ -22,9 +22,9 @@ def get_remote_state(local_state : dict ) -> dict:
             'state file given to s3.get_remote_state '
             'was missing a key: {}'.format(e.msg)))
 
-    if 'profile' in local_state['backend']['config']:
+    try:
         profile_name = local_state['backend']['config']['profile']
-    else:
+    except KeyError:
         profile_name = 'default'
 
     aws_session = boto3.Session(profile_name=profile_name)
@@ -35,3 +35,28 @@ def get_remote_state(local_state : dict ) -> dict:
     return json.loads(rs_obj['Body'].read().decode('utf-8'))
 
 
+def verify_s3(state : dict):
+    """ verify this state init s3 remote state
+
+    Args:
+        state: local state file
+
+    Returns:
+        func: the function to fetch remote state from s3, or None if no
+        remote state
+
+    """
+    if 'config' not in state['backend']:
+        raise InvalidRemoteError(
+            'Your remote state configuration does not have a config section '
+            'and is thus invalid.')
+    if 'key' not in state['backend']['config']:
+        raise InvalidRemoteError(
+            'Your s3 remote state configuration does not have a state file key '
+            'and is thus invalid.')
+    if 'bucket' not in state['backend']['config']:
+        raise InvalidRemoteError(
+            'Your s3 remote state configuration does not have a bucket and is '
+            'thus invalid.')
+    # if all these checks pass without returning, it's s3 remote state
+    return get_remote_state
