@@ -48,7 +48,19 @@ def iterresources(filenames):
 
 
 def get_stage_root(tf_dirname=None, root=None):
-    """ look for a matching terraform root directory """
+    """Look for a terraform root directory to match the inventory root directory.
+
+    This function is meant to aid with using separate tfstate files and separate
+    ansible inventory files for different stages/environments. The idea
+    is that the ansible inventory directory and the terraform state directory
+    names will match. The directory of the ansible inventory call is used to find
+    ONLY the terraform state with the same name as the inventory.
+
+    Args:
+        tf_dirname (str): Subdirectory name that terraform files live under.
+        root (str): Root directory from which to search for terraform files.
+
+    """
     root = root or os.getcwd()
     ansible_dir = os.getcwd()
     tf_dirname = tf_dirname or 'terraform'
