@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Ansible Terraform Inventory"""
+"""Ansible Terraform Inventory."""
 # batteries included
 from __future__ import absolute_import
 

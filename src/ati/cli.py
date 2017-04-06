@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""CLI for ansible terrform inventory (ati).
+
+This module provides the ansible cli inventory, according to ansible specs.
+
+"""
 import argparse
 import json
 import os
@@ -7,6 +12,7 @@ from ati import __name__, __version__
 from ati.terraform import get_stage_root, iterhosts, iterresources, query_host, query_hostfile, query_list, tfstates
 
 def cli():
+    """Package entrypoint and cli."""
     parser = argparse.ArgumentParser(
         __file__, __doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, )
