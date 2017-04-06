@@ -167,6 +167,15 @@ a list. Given keys like this and the prefix "keys":
 
     ["mantl", "control"]
 
+## Contributing
+
+For contributions, please do at least the following:
+
+* Run py.test before and after your updates. Try and make sure the code coverage stays at
+  at least at the same level.
+* Run pydocstyle, and make sure that any code you've touched passes.
+* py.test will also run flake8, so that should take care of itself.
+
 ## License
 
 Copyright © 2015 Cisco Systems, Inc.
