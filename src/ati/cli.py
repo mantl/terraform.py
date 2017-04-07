@@ -57,7 +57,7 @@ def cli():
         args.root = staged_root
 
     if args.version:
-        print('{} {}s'.format(__name__, __version__))
+        print('{} {}'.format(__name__, __version__))
         parser.exit()
 
     hosts = iterhosts(iterresources(tfstates(args.root)), args)
