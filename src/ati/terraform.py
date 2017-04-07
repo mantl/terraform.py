@@ -85,7 +85,7 @@ def _clean_dc(dcname):
     return re.sub('[^\w_\-]', '-', dcname)
 
 
-def iterhosts(resources):
+def iterhosts(resources, args):
     '''yield host tuples of (name, attributes, groups)'''
     for module_name, key, resource in resources:
         resource_type, name = key.split('.', 1)
@@ -94,7 +94,7 @@ def iterhosts(resources):
         except KeyError:
             continue
 
-        yield parser(resource, module_name)
+        yield parser(resource, module_name, args=args)
 
 
 def parses(prefix):
@@ -170,7 +170,7 @@ def parse_bool(string_form):
 
 @parses('triton_machine')
 @calculate_mantl_vars
-def triton_machine(resource, module_name):
+def triton_machine(resource, module_name, *args, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs.get('name')
     groups = []
@@ -239,7 +239,7 @@ def triton_machine(resource, module_name):
 
 @parses('digitalocean_droplet')
 @calculate_mantl_vars
-def digitalocean_host(resource, tfvars=None):
+def digitalocean_host(resource, tfvars=None, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
     groups = []
@@ -290,7 +290,7 @@ def digitalocean_host(resource, tfvars=None):
 
 @parses('softlayer_virtualserver')
 @calculate_mantl_vars
-def softlayer_host(resource, module_name):
+def softlayer_host(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
     groups = []
@@ -328,7 +328,7 @@ def softlayer_host(resource, module_name):
 
 @parses('openstack_compute_instance_v2')
 @calculate_mantl_vars
-def openstack_host(resource, module_name):
+def openstack_host(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
     groups = []
@@ -396,12 +396,17 @@ def openstack_host(resource, module_name):
 
 @parses('aws_instance')
 @calculate_mantl_vars
-def aws_host(
-        resource,
-        module_name,
-        name_field='private_ip',
-        ssh_host_field='private_ip'):
-    name = resource['primary']['attributes'][name_field]
+def aws_host(resource, module_name, **kwargs):
+    try:
+        name_key = kwargs['args'].aws_name_key
+    except KeyError:
+        name_key = 'tags.Name'
+    try:
+        ssh_host_key = kwargs['args'].aws_ssh_host_key
+    except KeyError:
+        ssh_host_key =  'public_ip'
+
+    name = resource['primary']['attributes'][name_key]
     raw_attrs = resource['primary']['attributes']
 
     groups = []
@@ -429,7 +434,7 @@ def aws_host(
                                              'vpc_security_group_ids'),
         # ansible-specific
         'ansible_ssh_port': 22,
-        'ansible_ssh_host': raw_attrs[ssh_host_field],
+        'ansible_ssh_host': raw_attrs[ssh_host_key],
         # generic
         'public_ipv4': raw_attrs['public_ip'],
         'private_ipv4': raw_attrs['private_ip'],
@@ -469,7 +474,7 @@ def aws_host(
 
 @parses('google_compute_instance')
 @calculate_mantl_vars
-def gce_host(resource, module_name):
+def gce_host(resource, module_name, **kwargs):
     name = resource['primary']['id']
     raw_attrs = resource['primary']['attributes']
     groups = []
@@ -544,7 +549,7 @@ def gce_host(resource, module_name):
 
 @parses('vsphere_virtual_machine')
 @calculate_mantl_vars
-def vsphere_host(resource, module_name):
+def vsphere_host(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     network_attrs = parse_dict(raw_attrs, 'network_interface')
     network = parse_dict(network_attrs, '0')
@@ -586,7 +591,7 @@ def vsphere_host(resource, module_name):
 
 @parses('azure_instance')
 @calculate_mantl_vars
-def azure_host(resource, module_name):
+def azure_host(resource, module_name, **kwargs):
     name = resource['primary']['attributes']['name']
     raw_attrs = resource['primary']['attributes']
 
@@ -637,7 +642,7 @@ def azure_host(resource, module_name):
 
 @parses('clc_server')
 @calculate_mantl_vars
-def clc_server(resource, module_name):
+def clc_server(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs.get('id')
     groups = []
@@ -675,7 +680,7 @@ def clc_server(resource, module_name):
 
 @parses('ucs_service_profile')
 @calculate_mantl_vars
-def ucs_host(resource, module_name):
+def ucs_host(resource, module_name, **kwargs):
     name = resource['primary']['id']
     raw_attrs = resource['primary']['attributes']
     groups = []
