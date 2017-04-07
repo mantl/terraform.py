@@ -1,4 +1,4 @@
-0.4.1 (unreleased)
+0.4.1 (2017-04-07)
 ------------------
 
 - Removed python3 type hints. Moving back to python2 because of a pipsi
