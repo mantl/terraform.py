@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2015 Cisco Systems, Inc.
 #
@@ -17,12 +17,14 @@
 Dynamic inventory for Terraform - finds all `.tfstate` files below the working
 directory and generates an inventory based on them.
 """
-from __future__ import unicode_literals, print_function
+
 from collections import defaultdict
 from functools import wraps
 import json
 import os
 import re
+
+import ati.remote
 
 def tfstates(root=None):
     root = root or os.getcwd()
@@ -36,21 +38,37 @@ def iterresources(filenames):
     for filename in filenames:
         with open(filename, 'r') as json_file:
             state = json.load(json_file)
+            remote_state_func = ati.remote.get_remote_func(state)
+            if remote_state_func is not None:
+                state = remote_state_func(state)
             for module in state['modules']:
                 name = module['path'][-1]
-                for key, resource in module['resources'].items():
+                for key, resource in list(module['resources'].items()):
                     yield name, key, resource
 
 
 def get_stage_root(tf_dirname=None, root=None):
-    """ look for a matching terraform root directory """
+    """Look for a terraform root directory to match the inventory root directory.
+
+    This function is meant to aid with using separate tfstate files and separate
+    ansible inventory files for different stages/environments. The idea
+    is that the ansible inventory directory and the terraform state directory
+    names will match. The directory of the ansible inventory call is used to find
+    ONLY the terraform state with the same name as the inventory.
+
+    Args:
+        tf_dirname (str): Subdirectory name that terraform files live under.
+        root (str): Root directory from which to search for terraform files.
+
+    """
     root = root or os.getcwd()
+    ansible_dir = os.getcwd()
     tf_dirname = tf_dirname or 'terraform'
-    inv_dir = os.path.dirname(__file__).split(os.path.sep)[-1]
+    inv_name = root.split(os.path.sep)[-1]
     try:
-        terraform_base = os.path.join(root, tf_dirname)
-        if inv_dir in os.listdir(terraform_base):
-            return os.path.join(terraform_base, inv_dir)
+        terraform_base = os.path.join(ansible_dir, tf_dirname)
+        if inv_name in os.listdir(terraform_base):
+            return os.path.join(terraform_base, inv_name)
         else:
             return root
     except OSError:
@@ -67,7 +85,7 @@ def _clean_dc(dcname):
     return re.sub('[^\w_\-]', '-', dcname)
 
 
-def iterhosts(resources):
+def iterhosts(resources, args):
     '''yield host tuples of (name, attributes, groups)'''
     for module_name, key, resource in resources:
         resource_type, name = key.split('.', 1)
@@ -76,7 +94,7 @@ def iterhosts(resources):
         except KeyError:
             continue
 
-        yield parser(resource, module_name)
+        yield parser(resource, module_name, args=args)
 
 
 def parses(prefix):
@@ -110,7 +128,7 @@ def calculate_mantl_vars(func):
 
 
 def _parse_prefix(source, prefix, sep='.'):
-    for compkey, value in source.items():
+    for compkey, value in list(source.items()):
         try:
             curprefix, rest = compkey.split(sep, 1)
         except ValueError:
@@ -128,7 +146,7 @@ def parse_attr_list(source, prefix, sep='.'):
         idx, key = compkey.split(sep, 1)
         attrs[idx][key] = value
 
-    return attrs.values()
+    return list(attrs.values())
 
 
 def parse_dict(source, prefix, sep='.'):
@@ -152,7 +170,7 @@ def parse_bool(string_form):
 
 @parses('triton_machine')
 @calculate_mantl_vars
-def triton_machine(resource, module_name):
+def triton_machine(resource, module_name, *args, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs.get('name')
     groups = []
@@ -208,7 +226,7 @@ def triton_machine(resource, module_name):
     groups.append('triton_state=' + attrs['state'])
     groups.append('triton_firewall_enabled=%s' % attrs['firewall_enabled'])
     groups.extend('triton_tags_%s=%s' % item
-                  for item in attrs['tags'].items())
+                  for item in list(attrs['tags'].items()))
     groups.extend('triton_network=' + network
                   for network in attrs['networks'])
 
@@ -221,7 +239,7 @@ def triton_machine(resource, module_name):
 
 @parses('digitalocean_droplet')
 @calculate_mantl_vars
-def digitalocean_host(resource, tfvars=None):
+def digitalocean_host(resource, tfvars=None, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
     groups = []
@@ -261,7 +279,7 @@ def digitalocean_host(resource, tfvars=None):
     groups.append('do_size=' + attrs['size'])
     groups.append('do_status=' + attrs['status'])
     groups.extend('do_metadata_%s=%s' % item
-                  for item in attrs['metadata'].items())
+                  for item in list(attrs['metadata'].items()))
 
     # groups specific to Mantl
     groups.append('role=' + attrs['role'])
@@ -272,7 +290,7 @@ def digitalocean_host(resource, tfvars=None):
 
 @parses('softlayer_virtualserver')
 @calculate_mantl_vars
-def softlayer_host(resource, module_name):
+def softlayer_host(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
     groups = []
@@ -310,7 +328,7 @@ def softlayer_host(resource, module_name):
 
 @parses('openstack_compute_instance_v2')
 @calculate_mantl_vars
-def openstack_host(resource, module_name):
+def openstack_host(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
     groups = []
@@ -366,7 +384,7 @@ def openstack_host(resource, module_name):
     groups.append('os_image=' + attrs['image']['name'])
     groups.append('os_flavor=' + attrs['flavor']['name'])
     groups.extend('os_metadata_%s=%s' % item
-                  for item in attrs['metadata'].items())
+                  for item in list(attrs['metadata'].items()))
     groups.append('os_region=' + attrs['region'])
 
     # groups specific to Mantl
@@ -378,8 +396,17 @@ def openstack_host(resource, module_name):
 
 @parses('aws_instance')
 @calculate_mantl_vars
-def aws_host(resource, module_name):
-    name = resource['primary']['attributes']['tags.Name']
+def aws_host(resource, module_name, **kwargs):
+    try:
+        name_key = kwargs['args'].aws_name_key
+    except KeyError:
+        name_key = 'tags.Name'
+    try:
+        ssh_host_key = kwargs['args'].aws_ssh_host_key
+    except KeyError:
+        ssh_host_key =  'public_ip'
+
+    name = resource['primary']['attributes'][name_key]
     raw_attrs = resource['primary']['attributes']
 
     groups = []
@@ -407,7 +434,7 @@ def aws_host(resource, module_name):
                                              'vpc_security_group_ids'),
         # ansible-specific
         'ansible_ssh_port': 22,
-        'ansible_ssh_host': raw_attrs['public_ip'],
+        'ansible_ssh_host': raw_attrs[ssh_host_key],
         # generic
         'public_ipv4': raw_attrs['public_ip'],
         'private_ipv4': raw_attrs['private_ip'],
@@ -432,11 +459,11 @@ def aws_host(resource, module_name):
                    'aws_az=' + attrs['availability_zone'],
                    'aws_key_name=' + attrs['key_name'],
                    'aws_tenancy=' + attrs['tenancy']])
-    groups.extend('aws_tag_%s=%s' % item for item in attrs['tags'].items())
+    groups.extend('aws_tag_%s=%s' % item for item in list(attrs['tags'].items()))
     groups.extend('aws_vpc_security_group=' + group
                   for group in attrs['vpc_security_group_ids'])
     groups.extend('aws_subnet_%s=%s' % subnet
-                  for subnet in attrs['subnet'].items())
+                  for subnet in list(attrs['subnet'].items()))
 
     # groups specific to Mantl
     groups.append('role=' + attrs['role'])
@@ -447,7 +474,7 @@ def aws_host(resource, module_name):
 
 @parses('google_compute_instance')
 @calculate_mantl_vars
-def gce_host(resource, module_name):
+def gce_host(resource, module_name, **kwargs):
     name = resource['primary']['id']
     raw_attrs = resource['primary']['attributes']
     groups = []
@@ -457,7 +484,7 @@ def gce_host(resource, module_name):
     for interface in interfaces:
         interface['access_config'] = parse_attr_list(interface,
                                                      'access_config')
-        for key in interface.keys():
+        for key in list(interface.keys()):
             if '.' in key:
                 del interface[key]
 
@@ -503,7 +530,7 @@ def gce_host(resource, module_name):
     groups.extend('gce_image=' + disk['image'] for disk in attrs['disks'])
     groups.append('gce_machine_type=' + attrs['machine_type'])
     groups.extend('gce_metadata_%s=%s' % (key, value)
-                  for (key, value) in attrs['metadata'].items()
+                  for (key, value) in list(attrs['metadata'].items())
                   if key not in set(['sshKeys']))
     groups.extend('gce_tag=' + tag for tag in attrs['tags'])
     groups.append('gce_zone=' + attrs['zone'])
@@ -522,7 +549,7 @@ def gce_host(resource, module_name):
 
 @parses('vsphere_virtual_machine')
 @calculate_mantl_vars
-def vsphere_host(resource, module_name):
+def vsphere_host(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     network_attrs = parse_dict(raw_attrs, 'network_interface')
     network = parse_dict(network_attrs, '0')
@@ -564,7 +591,7 @@ def vsphere_host(resource, module_name):
 
 @parses('azure_instance')
 @calculate_mantl_vars
-def azure_host(resource, module_name):
+def azure_host(resource, module_name, **kwargs):
     name = resource['primary']['attributes']['name']
     raw_attrs = resource['primary']['attributes']
 
@@ -615,7 +642,7 @@ def azure_host(resource, module_name):
 
 @parses('clc_server')
 @calculate_mantl_vars
-def clc_server(resource, module_name):
+def clc_server(resource, module_name, **kwargs):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs.get('id')
     groups = []
@@ -653,7 +680,7 @@ def clc_server(resource, module_name):
 
 @parses('ucs_service_profile')
 @calculate_mantl_vars
-def ucs_host(resource, module_name):
+def ucs_host(resource, module_name, **kwargs):
     name = resource['primary']['id']
     raw_attrs = resource['primary']['attributes']
     groups = []

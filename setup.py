@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Ansible Terraform Inventory"""
+"""Ansible Terraform Inventory."""
 # batteries included
 from __future__ import absolute_import
 
@@ -10,21 +10,22 @@ from setuptools import find_packages, setup
 
 
 doc_requirements = []
-install_requirements = []
+install_requirements = [
+    'boto3>=boto3-1.4.4,<2']
 release_requirements = [
     'zest.releaser[recommended]>=6.6.5,<6.7']
 test_requirements = [
     'coverage>=3,<4',
     'flake8>=3.3.0,<4',
+    'moto>=0.4.31,<1',
     'pydocstyle>=1.1.1,<2',
     'pytest>=2.9.2,<3',
     'pytest-cov>=2.4.0,<3',
     'pytest-flakes>=1.0.1,<2',
-    'pytest-mccabe>=0.0.1,<2']
-
+    'pytest-mccabe>=0.0.1,<2',
+    'moto>=0.4.31,<1']
 debug_requirements = [
     'pdbpp>=0.8.3,<1']
-
 dev_requirements = (
     doc_requirements +
     test_requirements +
@@ -36,7 +37,7 @@ entry_points = {
     'console_scripts': ['ati=ati.cli:cli']}
 
 setup(name='ati',
-      version='0.3.1.dev0',
+      version='0.4.1.dev0',
       description='Ansible Terraform Inventory',
       author='Brian Hicks',
       author_email='brian@brianthicks.com',
@@ -47,8 +48,8 @@ setup(name='ati',
         'Natural Language :: English',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
       ],
       entry_points=entry_points,
       keywords=['ansible', 'inventory', 'devops', 'terraform'],

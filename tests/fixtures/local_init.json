@@ -1,0 +1,129 @@
+{
+    "version": 3,
+    "terraform_version": "0.9.1",
+    "serial": 0,
+    "lineage": "3707b542-be8e-452c-a2ef-dddddddd9682",
+    "modules": [
+        {
+            "path": [
+                "root"
+            ],
+            "outputs": {},
+            "resources": {
+                "aws_instance.web": {
+                    "type": "aws_instance",
+                    "depends_on": [
+                        "data.aws_ami.ubuntu"
+                    ],
+                    "primary": {
+                        "id": "i-0f73d4bf42835c500",
+                        "attributes": {
+                            "ami": "ami-e5bf05f3",
+                            "associate_public_ip_address": "true",
+                            "availability_zone": "us-east-1a",
+                            "disable_api_termination": "false",
+                            "ebs_block_device.#": "0",
+                            "ebs_optimized": "false",
+                            "ephemeral_block_device.#": "0",
+                            "iam_instance_profile": "",
+                            "id": "i-0f73d4bf42835c473",
+                            "instance_state": "running",
+                            "instance_type": "t2.micro",
+                            "ipv6_address_count": "0",
+                            "ipv6_addresses.#": "0",
+                            "key_name": "",
+                            "monitoring": "false",
+                            "network_interface_id": "eni-65b32000",
+                            "private_dns": "ip-172-31-65-106.ec2.internal",
+                            "private_ip": "172.10.65.106",
+                            "public_dns": "ec2-53-207-88-73.compute-1.amazonaws.com",
+                            "public_ip": "53.107.18.83",
+                            "root_block_device.#": "1",
+                            "root_block_device.0.delete_on_termination": "true",
+                            "root_block_device.0.iops": "100",
+                            "root_block_device.0.volume_size": "8",
+                            "root_block_device.0.volume_type": "gp2",
+                            "security_groups.#": "0",
+                            "source_dest_check": "true",
+                            "subnet_id": "subnet-77d45e02",
+                            "tags.%": "1",
+                            "tags.Name": "HelloWorld",
+                            "tenancy": "default",
+                            "vpc_security_group_ids.#": "1",
+                            "vpc_security_group_ids.277509774": "sg-401ef000"
+                        },
+                        "meta": {
+                            "schema_version": "1"
+                        },
+                        "tainted": false
+                    },
+                    "deposed": [],
+                    "provider": ""
+                },
+                "data.aws_ami.ubuntu": {
+                    "type": "aws_ami",
+                    "depends_on": [],
+                    "primary": {
+                        "id": "ami-e5bf0000",
+                        "attributes": {
+                            "architecture": "x86_64",
+                            "block_device_mappings.#": "3",
+                            "block_device_mappings.1634610537.device_name": "/dev/sdb",
+                            "block_device_mappings.1634610537.ebs.%": "0",
+                            "block_device_mappings.1634610537.no_device": "",
+                            "block_device_mappings.1634610537.virtual_name": "ephemeral0",
+                            "block_device_mappings.2547816212.device_name": "/dev/sda1",
+                            "block_device_mappings.2547816212.ebs.%": "6",
+                            "block_device_mappings.2547816212.ebs.delete_on_termination": "true",
+                            "block_device_mappings.2547816212.ebs.encrypted": "false",
+                            "block_device_mappings.2547816212.ebs.iops": "0",
+                            "block_device_mappings.2547816212.ebs.snapshot_id": "snap-052d62986f51e1000",
+                            "block_device_mappings.2547816212.ebs.volume_size": "8",
+                            "block_device_mappings.2547816212.ebs.volume_type": "gp2",
+                            "block_device_mappings.2547816212.no_device": "",
+                            "block_device_mappings.2547816212.virtual_name": "",
+                            "block_device_mappings.3850042718.device_name": "/dev/sdc",
+                            "block_device_mappings.3850042718.ebs.%": "0",
+                            "block_device_mappings.3850042718.no_device": "",
+                            "block_device_mappings.3850042718.virtual_name": "ephemeral1",
+                            "creation_date": "2017-03-30T23:48:12.000Z",
+                            "filter.#": "2",
+                            "filter.4182425345.name": "name",
+                            "filter.4182425345.values.#": "1",
+                            "filter.4182425345.values.0": "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*",
+                            "filter.490168357.name": "virtualization-type",
+                            "filter.490168357.values.#": "1",
+                            "filter.490168357.values.0": "hvm",
+                            "hypervisor": "xen",
+                            "id": "ami-e5bf0000",
+                            "image_id": "ami-e5bf0000",
+                            "image_location": "099720109477/ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170330",
+                            "image_type": "machine",
+                            "most_recent": "true",
+                            "name": "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170330",
+                            "owner_id": "099720109477",
+                            "owners.#": "1",
+                            "owners.0": "099720109477",
+                            "product_codes.#": "0",
+                            "public": "true",
+                            "root_device_name": "/dev/sda1",
+                            "root_device_type": "ebs",
+                            "sriov_net_support": "simple",
+                            "state": "available",
+                            "state_reason.%": "2",
+                            "state_reason.code": "UNSET",
+                            "state_reason.message": "UNSET",
+                            "tags.#": "0",
+                            "virtualization_type": "hvm"
+                        },
+                        "meta": {},
+                        "tainted": false
+                    },
+                    "deposed": [],
+                    "provider": ""
+                }
+            },
+            "depends_on": []
+        }
+    ]
+}

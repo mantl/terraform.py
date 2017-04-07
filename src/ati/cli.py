@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""CLI for ansible terrform inventory (ati).
+
+This module provides the ansible cli inventory, according to ansible specs.
+
+"""
 import argparse
 import json
 import os
@@ -6,6 +12,7 @@ from ati import __name__, __version__
 from ati.terraform import get_stage_root, iterhosts, iterresources, query_host, query_hostfile, query_list, tfstates
 
 def cli():
+    """Package entrypoint and cli."""
     parser = argparse.ArgumentParser(
         __file__, __doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, )
@@ -26,12 +33,22 @@ def cli():
     parser.add_argument('--nometa',
                         action='store_true',
                         help='with --list, exclude hostvars')
-    default_root = os.environ.get('TERRAFORM_STATE_ROOT',
-                                  os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                               '..', '..', )))
+    default_root = os.environ.get('TERRAFORM_STATE_ROOT', os.getcwd())
     parser.add_argument('--root',
                         default=default_root,
                         help='custom root to search for `.tfstate`s in')
+    # extra aws args
+    parser.add_argument('--aws_name_key',
+                        # also defaulted in ati.terraform.aws_host
+                        default='tags.Name', 
+                        action='store',
+                        help='resouce attribute key to use as a name')
+    parser.add_argument('--aws_ssh_host_key',
+                        # also defaulted in ati.terraform.aws_host
+                        default='public_ip',
+                        action='store',
+                        help='resource attribute key to use as the ssh host')
+    # end aws args
 
     args = parser.parse_args()
 
@@ -43,7 +60,7 @@ def cli():
         print('{} {}s'.format(__name__, __version__))
         parser.exit()
 
-    hosts = iterhosts(iterresources(tfstates(args.root)))
+    hosts = iterhosts(iterresources(tfstates(args.root)), args)
     if args.list:
         output = query_list(hosts)
         if args.nometa:

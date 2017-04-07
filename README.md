@@ -30,13 +30,22 @@ reading Terraform's `.tfstate` files. It currently supports:
  - CenturyLinkCloud ([`clc_server`](https://www.terraform.io/docs/providers/clc/r/server.html))
  - SoftLayer ([`softlayer_virtualserver`](https://github.com/finn-no/terraform-provider-softlayer)) (Unofficial)
 
+For terraform >= 0.9.0, it also supports s3 remote state (and it should be trivial to add other backing stores)
+
 ## Installation
 
-`terraform.py` just needs to be on the filesystem of your control machine and
-marked as executable. If you're distributing your Ansible configuration via git,
-you could just add this repository as a git submodule and pin it to the
-[release](#releases) you want. Otherwise, copying `terraform.py` to a convenient
-place on your filesystem should do the trick.
+```
+git clone git@github.com:sean-abbott/terraform.py.git
+pipsi install terraform.py # basically, it needs to be on your path when you run ansible
+<edit a script in your inventory directory to include the below shell script>
+```
+
+In your inventory, you use a shell script to wrap this so that the inventory name is correctly passed to ati:
+
+```
+INVENTORY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ati "$@" --root $INVENTORY_DIR
+```
 
 ## Usage
 
@@ -49,14 +58,43 @@ Example, for EC2 resources, add a [tags](https://www.terraform.io/docs/providers
       sshUser = "ec2-user"
     }
 
-Next, specify `terraform.py` as an inventory source for any Ansible command. For
-instance, to use this to test if your servers are working:
+So, if you have ansible and terraform in the same directory, and you call ansible from the top level directory, like, so:
 
-    ansible -i terraform.py -m ping all
+```
+.
+├── inventory
+│   ├── dev
+│   │   ├── dev.inventory
+│   │   ├── group_vars -> ../group_vars
+│   │   └── terraform_inventory.sh -> ../terraform_inventory.sh
+│   ├── group_vars
+│   │   ├── dev
+│   │   ├── prod
+│   ├── prod
+│   │   ├── group_vars -> ../group_vars
+│   │   ├── prod.inventory
+│   │   └── terraform_inventory.sh -> ../terraform_inventory.sh
+│   ├── terraform_inventory.sh
+└── terraform
+    ├── dev
+    │   ├── dev.tf
+    │   ├── dev.tfvars
+    │   ├── .terraform
+    │   └   └── terraform.tfstate
+    ├── prod
+    │   ├── prod.tf
+    │   ├── prod.tfvars
+    │   ├── .terraform
+    │   └   └── terraform.tfstate
+    ├── README.rst
+    └── variables.tf
+```
 
-Or in a playbook:
+then from the top level directory(.), you can call ansible as:
 
-    ansible-playbook -i terraform.py your_playbook.yml
+`ansible all -i inventory/dev --list-hosts`
+
+and it will only list hosts from `terraform/dev`, and will also sucessfully list hosts stored only in remote state with terraform >= 0.9.0
 
 ## Releases
 
@@ -128,6 +166,15 @@ a list. Given keys like this and the prefix "keys":
 `parse_list` would return this:
 
     ["mantl", "control"]
+
+## Contributing
+
+For contributions, please do at least the following:
+
+* Run py.test before and after your updates. Try and make sure the code coverage stays at
+  at least at the same level.
+* Run pydocstyle, and make sure that any code you've touched passes.
+* py.test will also run flake8, so that should take care of itself.
 
 ## License
 
