@@ -10,11 +10,11 @@ verifiers = {
     's3': verify_s3}
 
 
-def get_remote_func(state : dict):
+def get_remote_func(state):
     """Choose which function to use for remote state.
 
     Args:
-        state: local state file
+        state (dict): local state file
 
     Returns:
         func: the function to be used to fetch the remote state, or None if

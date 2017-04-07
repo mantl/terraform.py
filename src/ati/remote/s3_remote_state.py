@@ -10,14 +10,14 @@ import json
 from ati.errors import InvalidRemoteError
 
 
-def get_remote_state(local_state : dict ) -> dict:
+def get_remote_state(local_state):
     """Fetch remote state from s3 and return it as a dictionary.
 
     This function is used to fetch a state file from AWS S3, convert
     and return it as a dictionary.
 
     Args:
-        local_state: local state file with remote information
+        local_state (dict): local state file with remote information
 
     """
     try:
@@ -41,11 +41,11 @@ def get_remote_state(local_state : dict ) -> dict:
     return json.loads(rs_obj['Body'].read().decode('utf-8'))
 
 
-def verify_s3(state : dict):
+def verify_s3(state):
     """Verify this state init s3 remote state.
 
     Args:
-        state: local state file
+        state (dict): local state file
 
     Returns:
         func: the function to fetch remote state from s3, or None if no
