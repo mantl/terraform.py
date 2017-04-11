@@ -679,6 +679,7 @@ def ucs_host(resource, module_name):
     return name, attrs, groups
 
 @parses('scaleway_server')
+@calculate_mantl_vars
 def scaleway_host(resource, tfvars=None):
     raw_attrs = resource['primary']['attributes']
     name = raw_attrs['name']
@@ -701,6 +702,24 @@ def scaleway_host(resource, tfvars=None):
         'private_ipv4': raw_attrs['private_ip'],
         'provider': 'scaleway',
     }
+
+
+    # attrs specific to Ansible
+    if 'tags.sshUser' in raw_attrs:
+        attrs['ansible_ssh_user'] = raw_attrs['tags.sshUser']
+    if 'tags.sshPrivateIp' in raw_attrs:
+        attrs['ansible_ssh_host'] = raw_attrs['private_ip']
+
+    # attrs specific to Mantl
+    attrs.update({
+        'consul_dc': _clean_dc(attrs['tags'].get('dc', module_name)),
+        'role': attrs['tags'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['tags'].get('python_bin','python')
+    })
+
+    # groups specific to Mantl
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
 
     # add groups based on attrs
     groups.append('scaleway_image=' + attrs['image'])
