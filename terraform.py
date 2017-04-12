@@ -280,7 +280,6 @@ def digitalocean_host(resource, tfvars=None):
         'size': raw_attrs['size'],
         'ssh_keys': parse_list(raw_attrs, 'ssh_keys'),
         'status': raw_attrs['status'],
-        'tags': parse_list(raw_attrs, 'tags'),
         # ansible
         'ansible_ssh_host': raw_attrs['ipv4_address'],
         'ansible_ssh_port': 22,
@@ -307,8 +306,6 @@ def digitalocean_host(resource, tfvars=None):
     groups.append('do_status=' + attrs['status'])
     groups.extend('do_metadata_%s=%s' % item
                   for item in attrs['metadata'].items())
-    groups.extend('do_tag=%s' % item
-                  for item in attrs['tags'])
 
     # groups specific to Mantl
     groups.append('role=' + attrs['role'])
