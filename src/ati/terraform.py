@@ -168,6 +168,62 @@ def parse_bool(string_form):
         raise ValueError('could not convert %r to a bool' % string_form)
 
 
+@parses('ddcloud_server')
+@calculate_mantl_vars
+def ddcloud_server(resource, module_name):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs.get('name')
+    groups = []
+
+    tags = {}
+    raw_tags = parse_attr_list(raw_attrs, 'tag')
+    for raw_tag in raw_tags:
+        tags[raw_tag['name']] = raw_tag['value']
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'name': raw_attrs['name'],
+        'primary_ip': raw_attrs['public_ipv4'], # not available immediately after creation; you'll need to run terraform refresh first.
+        'tags': tags,
+
+        'network_domain': raw_attrs['networkdomain'],
+
+        # ansible
+        'ansible_ssh_host': raw_attrs['public_ipv4'],
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': 'root',  # it's always "root" on CloudControl images
+
+        # generic
+        'private_ipv4': raw_attrs['primary_adapter_ipv4'],
+        'public_ipv4': raw_attrs['public_ipv4'],
+        'primary_ipv6': raw_attrs['primary_adapter_ipv6'],
+        
+        'provider': 'ddcloud',
+    }
+
+    # image details
+    if 'os_image_id' in raw_attrs:
+        attrs['image_type'] = 'os'
+        attrs['image_id'] = raw_attrs['os_image_id']
+        attrs['image_name'] = raw_attrs['os_image_name']
+    else:
+        attrs['image_type'] = 'customer'
+        attrs['image_id'] = raw_attrs['customer_image_id']
+        attrs['image_name'] = aw_attrs['customer_image_name']
+
+    # attrs specific to Mantl
+    attrs.update({
+        'role': tags.get('role', 'none'),
+        'consul_dc': _clean_dc(tags.get('consul_dc', 'none'))
+    })
+
+    # groups specific to Mantl
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
+
+
 @parses('triton_machine')
 @calculate_mantl_vars
 def triton_machine(resource, module_name, *args, **kwargs):
