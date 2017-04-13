@@ -60,3 +60,6 @@ target/
 # editors
 # vim
 *.swp
+
+# hypothesis
+.hypothesis
