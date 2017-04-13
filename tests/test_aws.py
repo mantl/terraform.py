@@ -4,12 +4,12 @@ import pytest
 
 @pytest.fixture
 def aws_host():
-    from terraform import aws_host
+    from ati.terraform import aws_host
     return aws_host
 
 
 @pytest.fixture
-def aws_resource():
+def aws_resource():  # noqa
     return {
         "type": "aws_instance",
         "depends_on": ["aws_key_pair.deployer", "aws_security_group.control",
@@ -17,14 +17,14 @@ def aws_resource():
         "primary": {
             "id": "i-c99f6f60", "attributes": {
                 "ami": "ami-fe100a96", "associate_public_ip_address": "true",
-                "availability_zone": "us-east-1e", "ebs_block_device.#": "0",
+                "availability_zone": "us-east-1e", "ebs_block_device.#": "0",  # noqa
                 "ebs_optimized": "false", "ephemeral_block_device.#": "0",
                 "id": "i-c99f6f60", "instance_type": "m1.medium", "key_name":
                 "key-mi", "private_dns": "ip-10-0-152-191.ec2.internal",
                 "private_ip": "10.0.152.191", "public_dns":
                 "ec2-52-7-74-115.compute-1.amazonaws.com", "public_ip":
                 "52.7.74.115", "root_block_device.#": "1",
-                "ebs_block_device.#": "1",
+                "ebs_block_device.#": "1",  # noqa
                 "ebs_block_device.3075786550.delete_on_termination": "false",
                 "ebs_block_device.3075786550.device_name": "xvdh",
                 "ebs_block_device.3075786550.encrypted": "false",
@@ -42,7 +42,7 @@ def aws_resource():
                 "vpc_security_group_ids.#": "2",
                 "vpc_security_group_ids.1636704399": "sg-9c360cf8",
                 "vpc_security_group_ids.3543019159": "sg-9d360cf9"
-            }, "meta": {"schema_version": "1"}
+            }, "meta": {"schema_version": "1"}  # noqa
         }
     }
 
@@ -99,7 +99,10 @@ def test_name(aws_resource, aws_host):
 def test_attrs(aws_resource, aws_host, attr, should):
     _, attrs, _ = aws_host(aws_resource, 'module_name')
     assert attr in attrs
-    assert attrs[attr] == should
+    if type(attrs[attr]) == list:
+        assert sorted(attrs[attr]) == sorted(should)
+    else:
+        assert attrs[attr] == should
 
 
 @pytest.mark.parametrize(

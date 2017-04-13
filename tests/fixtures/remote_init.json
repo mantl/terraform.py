@@ -1,0 +1,27 @@
+{
+    "version": 3,
+    "serial": 0,
+    "lineage": "51d1303e-7188-4d10-b4fd-1a26a25d3c6c",
+    "backend": {
+        "type": "s3",
+        "config": {
+            "bucket": "test-terraform",
+            "encrypt": "true",
+            "key": "test-customer/terraform.tfstate",
+            "profile": "testawsprofile",
+            "region": "us-east-1"
+        },
+        "hash": 711640267643301111
+    },
+    "modules": [
+        {
+            "path": [
+                "root"
+            ],
+            "outputs": {},
+            "resources": {},
+            "depends_on": []
+        }
+    ]
+}
+

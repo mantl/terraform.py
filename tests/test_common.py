@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def calculate_mantl_vars():
-    from terraform import calculate_mantl_vars
+    from ati.terraform import calculate_mantl_vars
     return calculate_mantl_vars
 
 

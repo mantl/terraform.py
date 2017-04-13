@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def clc_server():
-    from terraform import clc_server
+    from ati.terraform import clc_server
     return clc_server
 
 

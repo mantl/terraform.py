@@ -3,7 +3,7 @@ import pytest
 
 @pytest.fixture
 def vsphere_host():
-    from terraform import vsphere_host
+    from ati.terraform import vsphere_host
     return vsphere_host
 
 @pytest.fixture

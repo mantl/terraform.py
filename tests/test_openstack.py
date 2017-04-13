@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def openstack_host():
-    from terraform import openstack_host
+    from ati.terraform import openstack_host
     return openstack_host
 
 
