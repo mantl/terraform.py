@@ -209,7 +209,7 @@ def ddcloud_server(resource, module_name):
     else:
         attrs['image_type'] = 'customer'
         attrs['image_id'] = raw_attrs['customer_image_id']
-        attrs['image_name'] = aw_attrs['customer_image_name']
+        attrs['image_name'] = raw_attrs['customer_image_name']
 
     # attrs specific to Mantl
     attrs.update({
