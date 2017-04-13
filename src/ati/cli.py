@@ -11,8 +11,7 @@ import os
 from ati import __name__, __version__ 
 from ati.terraform import get_stage_root, iterhosts, iterresources, query_host, query_hostfile, query_list, tfstates
 
-def cli():
-    """Package entrypoint and cli."""
+def get_args():
     parser = argparse.ArgumentParser(
         __file__, __doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, )
@@ -55,6 +54,12 @@ def cli():
     staged_root = get_stage_root(root=args.root)
     if staged_root != args.root:
         args.root = staged_root
+
+    return args, parser
+
+def cli():
+    """Package entrypoint and cli."""
+    args, parser = get_args()
 
     if args.version:
         print('{} {}'.format(__name__, __version__))

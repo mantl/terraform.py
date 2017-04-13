@@ -17,6 +17,7 @@ release_requirements = [
 test_requirements = [
     'coverage>=3,<4',
     'flake8>=3.3.0,<4',
+    'hypothesis>=3.7.0,<4',
     'moto>=0.4.31,<1',
     'pydocstyle>=1.1.1,<2',
     'pytest>=2.9.2,<3',
