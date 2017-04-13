@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def ddcloud_server():
-    from terraform import ddcloud_server
+    from ati.terraform import ddcloud_server
     return ddcloud_server
 
 
