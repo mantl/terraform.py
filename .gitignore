@@ -57,9 +57,5 @@ docs/_build/
 # PyBuilder
 target/
 
-# editors
-# vim
-*.swp
-
-# hypothesis
-.hypothesis
+# meld
+*.orig

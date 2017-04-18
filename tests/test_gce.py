@@ -90,7 +90,6 @@ def test_name(gce_resource, gce_host):
     'zone': 'us-central1-a',
     # ansible
     'ansible_ssh_host': '104.197.63.156',
-    'ansible_ssh_port': 22,
     # mi
     'consul_dc': 'gce-dc',
     'role': 'control',

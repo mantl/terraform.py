@@ -46,7 +46,6 @@ def test_name(clc_resource, clc_server):
         'role':'control',
         'dc': 'CA1'
     },
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'root',
     'ansible_ssh_host': '10.50.100.13',
     'private_ipv4': '10.50.100.13',

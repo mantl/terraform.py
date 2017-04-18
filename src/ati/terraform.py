@@ -252,7 +252,6 @@ def triton_machine(resource, module_name, *args, **kwargs):
 
         # ansible
         'ansible_ssh_host': raw_attrs['primaryip'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',  # it's "root" on Triton by default
 
         # generic
@@ -262,7 +261,7 @@ def triton_machine(resource, module_name, *args, **kwargs):
 
     # private IPv4
     for ip in attrs['ips']:
-        if ip.startswith('10') or ip.startswith('192.168'): # private IPs
+        if ip.startswith('10') or ip.startswith('192.168'):  # private IPs
             attrs['private_ipv4'] = ip
             break
 
@@ -293,6 +292,60 @@ def triton_machine(resource, module_name, *args, **kwargs):
     return name, attrs, groups
 
 
+@parses('packet_device')
+@calculate_mantl_vars
+def packet_device(resource, tfvars=None):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs['id']
+    groups = []
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'facility': raw_attrs['facility'],
+        'hostname': raw_attrs['hostname'],
+        'operating_system': raw_attrs['operating_system'],
+        'locked': parse_bool(raw_attrs['locked']),
+        'metadata': json.loads(raw_attrs.get('user_data', '{}')),
+        'plan': raw_attrs['plan'],
+        'project_id': raw_attrs['project_id'],
+        'state': raw_attrs['state'],
+        # ansible
+        'ansible_ssh_host': raw_attrs['network.0.address'],
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': 'root',  # it's always "root" on Packet
+        # generic
+        'ipv4_address': raw_attrs['network.0.address'],
+        'public_ipv4': raw_attrs['network.0.address'],
+        'ipv6_address': raw_attrs['network.1.address'],
+        'public_ipv6': raw_attrs['network.1.address'],
+        'private_ipv4': raw_attrs['network.2.address'],
+        'provider': 'packet',
+    }
+
+    # attrs specific to Mantl
+    attrs.update({
+        'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['facility'])),
+        'role': attrs['metadata'].get('role', 'none'),
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
+    })
+
+    # add groups based on attrs
+    groups.append('packet_facility=' + attrs['facility'])
+    groups.append('packet_operating_system=' + attrs['operating_system'])
+    groups.append('packet_locked=%s' % attrs['locked'])
+    groups.append('packet_state=' + attrs['state'])
+    groups.append('packet_plan=' + attrs['plan'])
+    groups.extend('packet_metadata_%s=%s' % item
+                  for item in attrs['metadata'].items())
+
+    # groups specific to Mantl
+    groups.append('role=' + attrs['role'])
+    groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
+
+
 @parses('digitalocean_droplet')
 @calculate_mantl_vars
 def digitalocean_host(resource, tfvars=None, **kwargs):
@@ -310,9 +363,9 @@ def digitalocean_host(resource, tfvars=None, **kwargs):
         'size': raw_attrs['size'],
         'ssh_keys': parse_list(raw_attrs, 'ssh_keys'),
         'status': raw_attrs['status'],
+        'tags': parse_list(raw_attrs, 'tags'),
         # ansible
         'ansible_ssh_host': raw_attrs['ipv4_address'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',  # it's always "root" on DO
         # generic
         'public_ipv4': raw_attrs['ipv4_address'],
@@ -325,7 +378,8 @@ def digitalocean_host(resource, tfvars=None, **kwargs):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # add groups based on attrs
@@ -335,7 +389,9 @@ def digitalocean_host(resource, tfvars=None, **kwargs):
     groups.append('do_size=' + attrs['size'])
     groups.append('do_status=' + attrs['status'])
     groups.extend('do_metadata_%s=%s' % item
-                  for item in list(attrs['metadata'].items()))
+                  for item in attrs['metadata'].items())
+    groups.extend('do_tag=%s' % item
+                  for item in attrs['tags'])
 
     # groups specific to Mantl
     groups.append('role=' + attrs['role'])
@@ -363,7 +419,6 @@ def softlayer_host(resource, module_name, **kwargs):
         'public_ipv4': raw_attrs['ipv4_address'],
         'private_ipv4': raw_attrs['ipv4_address_private'],
         'ansible_ssh_host': raw_attrs['ipv4_address'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',
         'provider': 'softlayer',
     }
@@ -372,7 +427,8 @@ def softlayer_host(resource, module_name, **kwargs):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', attrs['region'])),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # groups specific to Mantl
@@ -403,7 +459,6 @@ def openstack_host(resource, module_name, **kwargs):
         'region': raw_attrs.get('region', ''),
         'security_groups': parse_list(raw_attrs, 'security_groups'),
         # ansible
-        'ansible_ssh_port': 22,
         # workaround for an OpenStack bug where hosts have a different domain
         # after they're restarted
         'host_domain': 'novalocal',
@@ -433,11 +488,13 @@ def openstack_host(resource, module_name, **kwargs):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # add groups based on attrs
-    groups.append('os_image=' + attrs['image']['name'])
+    if 'name' in attrs['image'].keys():
+        groups.append('os_image=' + attrs['image']['name'])
     groups.append('os_flavor=' + attrs['flavor']['name'])
     groups.extend('os_metadata_%s=%s' % item
                   for item in list(attrs['metadata'].items()))
@@ -505,11 +562,18 @@ def aws_host(resource, module_name, **kwargs):
     if 'tags.sshPrivateKey' in raw_attrs:
         attrs['ansible_ssh_private_key_file'] = raw_attrs['tags.sshPrivateKey']
 
+    # add to groups by comma separated tag(s)
+    if 'tags.groups' in raw_attrs:
+        for group in raw_attrs['tags.groups'].split(','):
+            groups.append(group)
+
+
     # attrs specific to Mantl
     attrs.update({
         'consul_dc': _clean_dc(attrs['tags'].get('dc', module_name)),
         'role': attrs['tags'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['tags'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['tags']
+        .get('python_bin', 'python')
     })
 
     # groups specific to Mantl
@@ -559,7 +623,6 @@ def gce_host(resource, module_name, **kwargs):
         'tags': parse_list(raw_attrs, 'tags'),
         'zone': raw_attrs['zone'],
         # ansible
-        'ansible_ssh_port': 22,
         'provider': 'gce',
     }
 
@@ -571,13 +634,16 @@ def gce_host(resource, module_name, **kwargs):
     attrs.update({
         'consul_dc': _clean_dc(attrs['metadata'].get('dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     try:
         attrs.update({
-            'ansible_ssh_host': interfaces[0]['access_config'][0]['nat_ip'] or interfaces[0]['access_config'][0]['assigned_nat_ip'],
-            'public_ipv4': interfaces[0]['access_config'][0]['nat_ip'] or interfaces[0]['access_config'][0]['assigned_nat_ip'],
+            'ansible_ssh_host': interfaces[0]['access_config'][0]['nat_ip'] or
+            interfaces[0]['access_config'][0]['assigned_nat_ip'],
+            'public_ipv4': interfaces[0]['access_config'][0]['nat_ip'] or
+            interfaces[0]['access_config'][0]['assigned_nat_ip'],
             'private_ipv4': interfaces[0]['address'],
             'publicly_routable': True,
         })
@@ -621,7 +687,6 @@ def vsphere_host(resource, module_name, **kwargs):
         'private_ipv4': ip_address,
         'public_ipv4': ip_address,
         'metadata': parse_dict(raw_attrs, 'custom_configuration_parameters'),
-        'ansible_ssh_port': 22,
         'provider': 'vsphere',
     }
 
@@ -633,9 +698,11 @@ def vsphere_host(resource, module_name, **kwargs):
         attrs.update({'ansible_ssh_host': '', })
 
     attrs.update({
-        'consul_dc': _clean_dc(attrs['metadata'].get('consul_dc', module_name)),
+        'consul_dc': _clean_dc(attrs['metadata']
+                               .get('consul_dc', module_name)),
         'role': attrs['metadata'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['metadata'].get('python_bin','python')
+        'ansible_python_interpreter': attrs['metadata']
+        .get('python_bin', 'python')
     })
 
     # attrs specific to Ansible
@@ -646,6 +713,29 @@ def vsphere_host(resource, module_name, **kwargs):
     groups.append('dc=' + attrs['consul_dc'])
 
     return name, attrs, groups
+
+
+@parses('azurerm_virtual_machine')
+@calculate_mantl_vars
+def azurerm_host(resource, module_name):
+    name = resource['primary']['attributes']['name']
+    raw_attrs = resource['primary']['attributes']
+
+    groups = []
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'name': raw_attrs['name'],
+        # ansible
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': raw_attrs.get('tags.ssh_user', ''),
+        'ansible_ssh_host': raw_attrs.get('tags.ssh_ip', ''),
+    }
+
+    groups.append('role=' + raw_attrs.get('tags.role', ''))
+
+    return name, attrs, groups
+
 
 @parses('azure_instance')
 @calculate_mantl_vars
@@ -674,10 +764,13 @@ def azure_host(resource, module_name, **kwargs):
         'virtual_network': raw_attrs['virtual_network'],
         'endpoint': parse_attr_list(raw_attrs, 'endpoint'),
         # ansible
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': raw_attrs['username'],
         'ansible_ssh_host': raw_attrs['vip_address'],
     }
+    
+    for ep in attrs['endpoint']:
+        if ep['name'] == 'SSH':
+            attrs['ansible_ssh_port'] = int(ep['public_port'])
 
     # attrs specific to mantl
     attrs.update({
@@ -687,7 +780,8 @@ def azure_host(resource, module_name, **kwargs):
 
     # groups specific to mantl
     groups.extend(['azure_image=' + attrs['image'],
-                   'azure_location=' + attrs['location'].lower().replace(" ", "-"),
+                   'azure_location=' + attrs['location']
+                   .lower().replace(" ", "-"),
                    'azure_username=' + attrs['username'],
                    'azure_security_group=' + attrs['security_group']])
 
@@ -707,11 +801,13 @@ def clc_server(resource, module_name, **kwargs):
     md = parse_dict(raw_attrs, 'metadata')
     attrs = {
         'metadata': md,
-        'ansible_ssh_port': md.get('ssh_port', 22),
         'ansible_ssh_user': md.get('ssh_user', 'root'),
         'provider': 'clc',
         'publicly_routable': False,
     }
+    
+    if 'ssh_port' in md:
+        attrs['ansible_ssh_port'] = md.get('ssh_port')
 
     try:
         attrs.update({
@@ -765,14 +861,15 @@ def ucs_host(resource, module_name, **kwargs):
         attrs.update({'ansible_ssh_host': '', 'publicly_routable': False})
 
     # add groups based on attrs
-    groups.append('role=' + attrs['role']) #.get('role', 'none'))
+    groups.append('role=' + attrs['role'])  # .get('role', 'none'))
 
     # groups.append('all:children')
     groups.append('dc=' + attrs['consul_dc'])
 
     return name, attrs, groups
 
-## QUERY TYPES
+
+# QUERY TYPES
 def query_host(hosts, target):
     for name, attrs, _ in hosts:
         if name == target:
