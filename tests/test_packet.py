@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def packet_device():
-    from terraform import packet_device
+    from ati.terraform import packet_device
     return packet_device
 
 
