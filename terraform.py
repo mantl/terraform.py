@@ -606,6 +606,28 @@ def vsphere_host(resource, module_name):
 
     return name, attrs, groups
 
+
+@parses('azurerm_virtual_machine')
+@calculate_mantl_vars
+def azurerm_host(resource, module_name):
+    name = resource['primary']['attributes']['name']
+    raw_attrs = resource['primary']['attributes']
+
+    groups = []
+
+    attrs = {
+        'id': raw_attrs['id'],
+        'name': raw_attrs['name'],
+        # ansible
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': raw_attrs.get('tags.ssh_user', ''),
+        'ansible_ssh_host': raw_attrs.get('tags.ssh_ip', ''),
+    }
+
+    groups.append('role=' + raw_attrs.get('tags.role', ''))
+
+    return name, attrs, groups
+
 @parses('azure_instance')
 @calculate_mantl_vars
 def azure_host(resource, module_name):
