@@ -17,7 +17,8 @@ def digitalocean_resource():
                 "id": "5726884", "image": "centos-7-0-x64", "ipv4_address":
                 "1.2.3.4", "locked": "false", "name": "mi-control-01", "region":
                 "nyc3", "size": "4gb", "ssh_keys.#": "1", "ssh_keys.0":
-                "895599", "status": "active", "user_data": '{"role":"control"}'
+                "895599", "status": "active", "tags.#": "1", "tags.0": "test_tag",
+                "user_data": '{"role":"control"}'
             }
         }
     }
@@ -38,6 +39,7 @@ def test_name(digitalocean_resource, digitalocean_host):
     'size': '4gb',
     'ssh_keys': ['895599'],
     'status': 'active',
+    'tags': ['test_tag'],
     # ansible
     'ansible_ssh_host': '1.2.3.4',
     'ansible_ssh_user': 'root',
@@ -58,7 +60,7 @@ def test_attrs(digitalocean_resource, digitalocean_host, attr, should):
 @pytest.mark.parametrize(
     'group', ['do_image=centos-7-0-x64', 'do_locked=False', 'do_region=nyc3',
               'do_size=4gb', 'do_status=active', 'do_metadata_role=control',
-              'role=control', 'dc=nyc3']
+              'do_tag=test_tag', 'role=control', 'dc=nyc3']
 )
 def test_groups(digitalocean_resource, digitalocean_host, group):
     _, _, groups = digitalocean_host(digitalocean_resource, 'module_name')
