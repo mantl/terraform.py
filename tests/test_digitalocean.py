@@ -40,7 +40,6 @@ def test_name(digitalocean_resource, digitalocean_host):
     'status': 'active',
     # ansible
     'ansible_ssh_host': '1.2.3.4',
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'root',
     # generic
     'public_ipv4': '1.2.3.4',

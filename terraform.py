@@ -222,7 +222,6 @@ def triton_machine(resource, module_name):
 
         # ansible
         'ansible_ssh_host': raw_attrs['primaryip'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',  # it's "root" on Triton by default
 
         # generic
@@ -282,7 +281,6 @@ def digitalocean_host(resource, tfvars=None):
         'status': raw_attrs['status'],
         # ansible
         'ansible_ssh_host': raw_attrs['ipv4_address'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',  # it's always "root" on DO
         # generic
         'public_ipv4': raw_attrs['ipv4_address'],
@@ -333,7 +331,6 @@ def softlayer_host(resource, module_name):
         'public_ipv4': raw_attrs['ipv4_address'],
         'private_ipv4': raw_attrs['ipv4_address_private'],
         'ansible_ssh_host': raw_attrs['ipv4_address'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',
         'provider': 'softlayer',
     }
@@ -373,7 +370,6 @@ def openstack_host(resource, module_name):
         'region': raw_attrs.get('region', ''),
         'security_groups': parse_list(raw_attrs, 'security_groups'),
         # ansible
-        'ansible_ssh_port': 22,
         # workaround for an OpenStack bug where hosts have a different domain
         # after they're restarted
         'host_domain': 'novalocal',
@@ -450,7 +446,6 @@ def aws_host(resource, module_name):
         'vpc_security_group_ids': parse_list(raw_attrs,
                                              'vpc_security_group_ids'),
         # ansible-specific
-        'ansible_ssh_port': 22,
         'ansible_ssh_host': raw_attrs['public_ip'],
         # generic
         'public_ipv4': raw_attrs['public_ip'],
@@ -518,7 +513,6 @@ def gce_host(resource, module_name):
         'tags': parse_list(raw_attrs, 'tags'),
         'zone': raw_attrs['zone'],
         # ansible
-        'ansible_ssh_port': 22,
         'provider': 'gce',
     }
 
@@ -580,7 +574,6 @@ def vsphere_host(resource, module_name):
         'private_ipv4': ip_address,
         'public_ipv4': ip_address,
         'metadata': parse_dict(raw_attrs, 'custom_configuration_parameters'),
-        'ansible_ssh_port': 22,
         'provider': 'vsphere',
     }
 
@@ -655,10 +648,13 @@ def azure_host(resource, module_name):
         'virtual_network': raw_attrs['virtual_network'],
         'endpoint': parse_attr_list(raw_attrs, 'endpoint'),
         # ansible
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': raw_attrs['username'],
         'ansible_ssh_host': raw_attrs['vip_address'],
     }
+    
+    for ep in attrs['endpoint']:
+        if ep['name'] == 'SSH':
+            attrs['ansible_ssh_port'] = int(ep['public_port'])
 
     # attrs specific to mantl
     attrs.update({
@@ -688,11 +684,13 @@ def clc_server(resource, module_name):
     md = parse_dict(raw_attrs, 'metadata')
     attrs = {
         'metadata': md,
-        'ansible_ssh_port': md.get('ssh_port', 22),
         'ansible_ssh_user': md.get('ssh_user', 'root'),
         'provider': 'clc',
         'publicly_routable': False,
     }
+    
+    if 'ssh_port' in md:
+        attrs['ansible_ssh_port'] = md.get('ssh_port')
 
     try:
         attrs.update({
