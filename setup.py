@@ -11,7 +11,8 @@ from setuptools import find_packages, setup
 
 doc_requirements = []
 install_requirements = [
-    'boto3>=boto3-1.4.4,<2']
+    'boto3>=1.4.4,<2',
+    'sh>=1.12.13,<2']
 release_requirements = [
     'zest.releaser[recommended]>=6.6.5,<6.7']
 test_requirements = [

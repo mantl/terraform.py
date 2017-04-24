@@ -9,7 +9,10 @@ import json
 import os
 
 from ati import __name__, __version__ 
-from ati.terraform import get_stage_root, iterhosts, iterresources, query_host, query_hostfile, query_list, tfstates
+from ati.terraform import (
+    get_stage_root, iterhosts, iterresources,
+    query_host, query_hostfile, query_list, tfstates,
+    iter_states)
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -32,6 +35,9 @@ def get_args():
     parser.add_argument('--nometa',
                         action='store_true',
                         help='with --list, exclude hostvars')
+    parser.add_argument('--noterraform',
+                        action='store_true',
+                        help='do not use terraform from path')
     default_root = os.environ.get('TERRAFORM_STATE_ROOT', os.getcwd())
     parser.add_argument('--root',
                         default=default_root,
@@ -49,6 +55,7 @@ def get_args():
                         help='resource attribute key to use as the ssh host')
     # end aws args
 
+
     args = parser.parse_args()
 
     staged_root = get_stage_root(root=args.root)
@@ -65,7 +72,11 @@ def cli():
         print('{} {}'.format(__name__, __version__))
         parser.exit()
 
-    hosts = iterhosts(iterresources(tfstates(args.root)), args)
+    if args.noterraform:
+        hosts = iterhosts(iterresources(tfstates(args.root)), args)
+    else:
+        hosts = iterhosts(iterresources(iter_states(args.root)), args)
+
     if args.list:
         output = query_list(hosts)
         if args.nometa:

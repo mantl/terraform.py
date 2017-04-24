@@ -24,7 +24,8 @@ import json
 import os
 import re
 
-import ati.remote
+import sh
+
 
 def tfstates(root=None):
     root = root or os.getcwd()
@@ -33,18 +34,33 @@ def tfstates(root=None):
             if os.path.splitext(name)[-1] == '.tfstate':
                 yield os.path.join(dirpath, name)
 
+def iter_states(root=None):
+    root = root or os.getcwd()
+    curdir = os.getcwd()
+    for dpath, dnames, fnames in os.walk(root):
+        if '.terraform' in dnames:
+            try:
+                os.chdir(dpath)
+                output = sh.terraform("state", "pull").stdout.decode('utf-8')
+                start_index = output.find('{')
+                if start_index < 0:
+                    start_index = 0
+                yield json.loads(output[start_index:])
+            finally:
+                os.chdir(curdir)
 
-def iterresources(filenames):
-    for filename in filenames:
-        with open(filename, 'r') as json_file:
-            state = json.load(json_file)
-            remote_state_func = ati.remote.get_remote_func(state)
-            if remote_state_func is not None:
-                state = remote_state_func(state)
-            for module in state['modules']:
-                name = module['path'][-1]
-                for key, resource in list(module['resources'].items()):
-                    yield name, key, resource
+
+def iterresources(sources):
+    for source in sources:
+	if type(source) in [unicode, str]:
+            with open(source, 'r') as json_file:
+                state = json.load(json_file)
+	else:
+	    state = source
+        for module in state['modules']:
+            name = module['path'][-1]
+            for key, resource in list(module['resources'].items()):
+                yield name, key, resource
 
 
 def get_stage_root(tf_dirname=None, root=None):

@@ -3,7 +3,7 @@
 
 - add ability to include an ssh key via tags.sshPrivateKey. this may be relative to where ansible is called from.
 
-- Nothing changed yet.
+- switch from manually fetcing remote state to using "terraform state pull". To retain old behavior, use "--noterraform"
 
 
 0.4.1 (2017-04-07)
