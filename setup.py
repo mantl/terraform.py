@@ -39,7 +39,7 @@ entry_points = {
     'console_scripts': ['ati=ati.cli:cli']}
 
 setup(name='ati',
-      version='0.4.2.dev0',
+      version='0.4.2',
       description='Ansible Terraform Inventory',
       author='Brian Hicks',
       author_email='brian@brianthicks.com',

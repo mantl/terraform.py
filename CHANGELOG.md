@@ -1,4 +1,4 @@
-0.4.2 (unreleased)
+0.4.2 (2017-04-24)
 ------------------
 
 - add ability to include an ssh key via tags.sshPrivateKey. this may be relative to where ansible is called from.
