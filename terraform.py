@@ -167,7 +167,7 @@ def ddcloud_server(resource, module_name):
         'private_ipv4': raw_attrs['primary_adapter_ipv4'],
         'public_ipv4': raw_attrs['public_ipv4'],
         'primary_ipv6': raw_attrs['primary_adapter_ipv6'],
-        
+
         'provider': 'ddcloud',
     }
 
@@ -762,17 +762,6 @@ def scaleway_host(resource, tfvars=None):
         attrs['ansible_ssh_user'] = raw_attrs['tags.sshUser']
     if 'tags.sshPrivateIp' in raw_attrs:
         attrs['ansible_ssh_host'] = raw_attrs['private_ip']
-
-    # attrs specific to Mantl
-    attrs.update({
-        'consul_dc': _clean_dc(attrs['tags'].get('dc', module_name)),
-        'role': attrs['tags'].get('role', 'none'),
-        'ansible_python_interpreter': attrs['tags'].get('python_bin','python')
-    })
-
-    # groups specific to Mantl
-    groups.append('role=' + attrs['role'])
-    groups.append('dc=' + attrs['consul_dc'])
 
     # add groups based on attrs
     groups.append('scaleway_image=' + attrs['image'])
