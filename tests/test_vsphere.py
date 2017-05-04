@@ -50,7 +50,6 @@ def test_name(vsphere_resource, vsphere_host):
     'id': 'server01',
     # ansible
     'ansible_ssh_host': '1.2.3.4',
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'vsphere-user',
     'ansible_python_interpreter': '/usr/bin/python',
     # generic
