@@ -41,7 +41,7 @@ def scaleway_resource():
 
 
 def test_name(scaleway_resource, scaleway_host):
-    name, _, _ = scalway_host(scaleway_resource, '')
+    name, _, _ = scaleway_host(scaleway_resource, '')
     assert name == 'test-server-01'
 
 
