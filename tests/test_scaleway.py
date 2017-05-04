@@ -36,11 +36,7 @@ def scaleway_resource():
                             "volume.0.type": "l_ssd",
                             "volume.0.volume_id": "282baeb3-f87b-45cf-b423-790fd95c5ad1"
                         },
-                        "meta": {},
-                        "tainted": false
                     },
-                    "deposed": [],
-                    "provider": ""
                 }
 
 
