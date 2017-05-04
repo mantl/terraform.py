@@ -167,7 +167,6 @@ def ddcloud_server(resource, module_name):
         'private_ipv4': raw_attrs['primary_adapter_ipv4'],
         'public_ipv4': raw_attrs['public_ipv4'],
         'primary_ipv6': raw_attrs['primary_adapter_ipv6'],
-
         'provider': 'ddcloud',
     }
 
@@ -333,6 +332,7 @@ def digitalocean_host(resource, tfvars=None):
         'size': raw_attrs['size'],
         'ssh_keys': parse_list(raw_attrs, 'ssh_keys'),
         'status': raw_attrs['status'],
+        'tags': parse_list(raw_attrs, 'tags'),
         # ansible
         'ansible_ssh_host': raw_attrs['ipv4_address'],
         'ansible_ssh_user': 'root',  # it's always "root" on DO
@@ -359,6 +359,8 @@ def digitalocean_host(resource, tfvars=None):
     groups.append('do_status=' + attrs['status'])
     groups.extend('do_metadata_%s=%s' % item
                   for item in attrs['metadata'].items())
+    groups.extend('do_tag=%s' % item
+                  for item in attrs['tags'])
 
     # groups specific to Mantl
     groups.append('role=' + attrs['role'])
@@ -722,7 +724,6 @@ def azure_host(resource, module_name):
         'ansible_ssh_user': raw_attrs['username'],
         'ansible_ssh_host': raw_attrs['vip_address'],
     }
-
     for ep in attrs['endpoint']:
         if ep['name'] == 'SSH':
             attrs['ansible_ssh_port'] = int(ep['public_port'])
@@ -760,7 +761,6 @@ def clc_server(resource, module_name):
         'provider': 'clc',
         'publicly_routable': False,
     }
-
     if 'ssh_port' in md:
         attrs['ansible_ssh_port'] = md.get('ssh_port')
 
@@ -864,6 +864,8 @@ def scaleway_host(resource, tfvars=None):
 
     return name, attrs, groups
 
+
+# QUERY TYPES
 def query_host(hosts, target):
     for name, attrs, _ in hosts:
         if name == target:
