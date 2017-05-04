@@ -5,7 +5,6 @@ import pytest
 @pytest.fixture
 def scaleway_host():
     from terraform import scaleway_host
-    #import pdb; pdb.set_trace()
     return scaleway_host
 
 
