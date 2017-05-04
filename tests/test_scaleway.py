@@ -71,10 +71,7 @@ def test_name(scaleway_resource, scaleway_host):
     
     # ansible
     'ansible_ssh_host': '77.77.77.77',
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'root',
-    # mi
-    #'consul_dc': 'scaleway',
     # generic
     'private_ipv4': '55.55.55.55',
     'public_ipv4': '77.77.77.77',
