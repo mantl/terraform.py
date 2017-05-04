@@ -5,6 +5,7 @@ import pytest
 @pytest.fixture
 def scaleway_host():
     from terraform import scaleway_host
+    #import pdb; pdb.set_trace()
     return scaleway_host
 
 
@@ -54,15 +55,8 @@ def test_name(scaleway_resource, scaleway_host):
     'public_ip': '77.77.77.77',
     'state': 'running',
     'state_detail': 'booted',
-    'tags.#': '3',
-    'tags.0': 'frontend',
-    'tags.1': 'dev',
-    'tags.2': 'lga',
+    'tags': ['dev', 'frontend', 'lga'],
     'type': 'VC1M',
-    'volume.#': '1',
-    'volume.0.size_in_gb': '20',
-    'volume.0.type': 'l_ssd',
-    'volume.0.volume_id': '282baeb3-f87b-45cf-b423-790fd95c5ad1',
     # ansible
     'ansible_ssh_host': '77.77.77.77',
     'ansible_ssh_port': 22,
