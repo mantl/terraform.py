@@ -68,8 +68,7 @@ def test_name(scaleway_resource, scaleway_host):
         "volume.0.type": "l_ssd",
         "volume.0.volume_id": "282baeb3-f87b-45cf-b423-790fd95c5ad1",
     },
-    'tenancy': 'default',
-    'vpc_security_group_ids': ['sg-9c360cf8', 'sg-9d360cf9'],
+    
     # ansible
     'ansible_ssh_host': '77.77.77.77',
     'ansible_ssh_port': 22,
