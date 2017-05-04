@@ -167,6 +167,7 @@ def ddcloud_server(resource, module_name):
         'private_ipv4': raw_attrs['primary_adapter_ipv4'],
         'public_ipv4': raw_attrs['public_ipv4'],
         'primary_ipv6': raw_attrs['primary_adapter_ipv6'],
+
         'provider': 'ddcloud',
     }
 
@@ -724,6 +725,7 @@ def azure_host(resource, module_name):
         'ansible_ssh_user': raw_attrs['username'],
         'ansible_ssh_host': raw_attrs['vip_address'],
     }
+
     for ep in attrs['endpoint']:
         if ep['name'] == 'SSH':
             attrs['ansible_ssh_port'] = int(ep['public_port'])
@@ -761,6 +763,7 @@ def clc_server(resource, module_name):
         'provider': 'clc',
         'publicly_routable': False,
     }
+    
     if 'ssh_port' in md:
         attrs['ansible_ssh_port'] = md.get('ssh_port')
 
