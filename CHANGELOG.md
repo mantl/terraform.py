@@ -1,4 +1,4 @@
-0.4.3 (unreleased)
+0.4.3 (2017-05-12)
 ------------------
 
 - Merge scaleway updates into new version
