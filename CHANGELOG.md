@@ -1,7 +1,7 @@
 0.4.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Merge scaleway updates into new version
 
 
 0.4.2 (2017-04-24)
