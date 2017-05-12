@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def gce_host():
-    from terraform import gce_host
+    from ati.terraform import gce_host
     return gce_host
 
 
@@ -102,7 +102,10 @@ def test_name(gce_resource, gce_host):
 def test_attrs(gce_resource, gce_host, attr, should):
     _, attrs, _ = gce_host(gce_resource, 'module_name')
     assert attr in attrs
-    assert attrs[attr] == should
+    if type(attrs[attr]) == list:
+        assert sorted(attrs[attr]) == sorted(should)
+    else:
+        assert attrs[attr] == should
 
 
 @pytest.mark.parametrize('group', [

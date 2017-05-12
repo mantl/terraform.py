@@ -1,6 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
+*.py[code]
 *$py.class
 
 # C extensions
@@ -56,3 +56,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# meld
+*.orig

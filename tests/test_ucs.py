@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def ucs_host():
-    from terraform import ucs_host
+    from ati.terraform import ucs_host
     return ucs_host
 
 

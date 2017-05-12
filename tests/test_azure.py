@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def azure_host():
-    from terraform import azure_host
+    from ati.terraform import azure_host
     return azure_host
 
 

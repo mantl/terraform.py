@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def digitalocean_host():
-    from terraform import digitalocean_host
+    from ati.terraform import digitalocean_host
     return digitalocean_host
 
 

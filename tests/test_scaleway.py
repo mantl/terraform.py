@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def scaleway_host():
-    from terraform import scaleway_host
+    from ati.terraform import scaleway_host
     return scaleway_host
 
 
