@@ -1,6 +1,6 @@
 # Terraform.py
 
-[![Build Status](https://travis-ci.org/CiscoCloud/terraform.py.svg)](https://travis-ci.org/CiscoCloud/terraform.py)
+[![Build Status](https://travis-ci.org/mantl/terraform.py.svg)](https://travis-ci.org/mantl/terraform.py)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc/generate-toc again -->
 **Table of Contents**

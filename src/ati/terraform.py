@@ -213,7 +213,7 @@ def ddcloud_server(resource, module_name):
         'private_ipv4': raw_attrs['primary_adapter_ipv4'],
         'public_ipv4': raw_attrs['public_ipv4'],
         'primary_ipv6': raw_attrs['primary_adapter_ipv6'],
-        
+
         'provider': 'ddcloud',
     }
 
@@ -783,7 +783,7 @@ def azure_host(resource, module_name, **kwargs):
         'ansible_ssh_user': raw_attrs['username'],
         'ansible_ssh_host': raw_attrs['vip_address'],
     }
-    
+
     for ep in attrs['endpoint']:
         if ep['name'] == 'SSH':
             attrs['ansible_ssh_port'] = int(ep['public_port'])
@@ -821,7 +821,7 @@ def clc_server(resource, module_name, **kwargs):
         'provider': 'clc',
         'publicly_routable': False,
     }
-    
+
     if 'ssh_port' in md:
         attrs['ansible_ssh_port'] = md.get('ssh_port')
 
@@ -881,6 +881,50 @@ def ucs_host(resource, module_name, **kwargs):
 
     # groups.append('all:children')
     groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
+
+@parses('scaleway_server')
+@calculate_mantl_vars
+def scaleway_host(resource, tfvars=None):
+    raw_attrs = resource['primary']['attributes']
+    name = raw_attrs['name']
+    groups = []
+
+    attrs = {
+        'enable_ipv6': raw_attrs['enable_ipv6'],
+        'id': raw_attrs['id'],
+        'image': raw_attrs['image'],
+        'name': raw_attrs['name'],
+        'private_ip': raw_attrs['private_ip'],
+        'public_ip': raw_attrs['public_ip'],
+        'state': raw_attrs['state'],
+        'state_detail': raw_attrs['state_detail'],
+        'tags': parse_list(raw_attrs, 'tags'),
+        'type': raw_attrs['type'],
+        # ansible
+        'ansible_ssh_host': raw_attrs['public_ip'],
+        'ansible_ssh_port': 22,
+        'ansible_ssh_user': 'root',  # it's always "root" on DO
+        # generic
+        'public_ipv4': raw_attrs['public_ip'],
+        'private_ipv4': raw_attrs['private_ip'],
+        'provider': 'scaleway',
+    }
+
+
+    # attrs specific to Ansible
+    if 'tags.sshUser' in raw_attrs:
+        attrs['ansible_ssh_user'] = raw_attrs['tags.sshUser']
+    if 'tags.sshPrivateIp' in raw_attrs:
+        attrs['ansible_ssh_host'] = raw_attrs['private_ip']
+
+    # add groups based on attrs
+    groups.append('scaleway_image=' + attrs['image'])
+    groups.append('scaleway_type=' + attrs['type'])
+    groups.append('scaleway_state=' + attrs['state'])
+    groups.extend('scaleway_tag=%s' % item
+                  for item in attrs['tags'])
 
     return name, attrs, groups
 
