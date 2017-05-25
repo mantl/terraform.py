@@ -58,7 +58,6 @@ def test_name(scaleway_resource, scaleway_host):
     'type': 'VC1M',
     # ansible
     'ansible_ssh_host': '77.77.77.77',
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'root',
     # generic
     'private_ipv4': '55.55.55.55',

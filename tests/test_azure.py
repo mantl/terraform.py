@@ -60,7 +60,6 @@ def test_name(azure_resource, azure_host):
     'image': 'apollo-ubuntu-14.04-amd64-1444419199',
     'ssh_key_thumbprint': '156E660861DBED413BE0F9E617FF7D720E019943',
     'consul_dc': 'north-europe',
-    'ansible_ssh_port': 22,
     'ip_address': '10.0.0.5',
     'id': 'mi-control-01',
     'size': 'Medium',

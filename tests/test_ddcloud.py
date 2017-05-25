@@ -71,7 +71,6 @@ def test_name(ddcloud_resource, ddcloud_server):
     'image_name': 'CentOS 7 64-bit 2 CPU',
     
     'ansible_ssh_host': '168.128.37.189',
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'root',
 
     'private_ipv4': '10.5.50.25',

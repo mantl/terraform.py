@@ -70,7 +70,6 @@ def test_name(azurerm_resource, azurerm_host):
 @pytest.mark.parametrize('attr,should', {
         "id": "/subscriptions/mysubguid/resourceGroups/terraformdemo/providers/Microsoft.Compute/virtualMachines/terraformdemo",
         "name": "terraformdemo",
-        "ansible_ssh_port": 22,
         "ansible_ssh_user": "terraformdemoadmin",
         "ansible_ssh_host": "10.10.0.1",
 }.items())
