@@ -206,7 +206,6 @@ def ddcloud_server(resource, module_name):
 
         # ansible
         'ansible_ssh_host': raw_attrs['public_ipv4'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',  # it's always "root" on CloudControl images
 
         # generic
@@ -327,7 +326,6 @@ def packet_device(resource, tfvars=None):
         'state': raw_attrs['state'],
         # ansible
         'ansible_ssh_host': raw_attrs['network.0.address'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',  # it's always "root" on Packet
         # generic
         'ipv4_address': raw_attrs['network.0.address'],
@@ -562,7 +560,6 @@ def aws_host(resource, module_name, **kwargs):
         'vpc_security_group_ids': parse_list(raw_attrs,
                                              'vpc_security_group_ids'),
         # ansible-specific
-        'ansible_ssh_port': 22,
         'ansible_ssh_host': raw_attrs[ssh_host_key],
         # generic
         'public_ipv4': raw_attrs['public_ip'],
@@ -743,7 +740,6 @@ def azurerm_host(resource, module_name):
         'id': raw_attrs['id'],
         'name': raw_attrs['name'],
         # ansible
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': raw_attrs.get('tags.ssh_user', ''),
         'ansible_ssh_host': raw_attrs.get('tags.ssh_ip', ''),
     }
@@ -904,7 +900,6 @@ def scaleway_host(resource, tfvars=None):
         'type': raw_attrs['type'],
         # ansible
         'ansible_ssh_host': raw_attrs['public_ip'],
-        'ansible_ssh_port': 22,
         'ansible_ssh_user': 'root',  # it's always "root" on DO
         # generic
         'public_ipv4': raw_attrs['public_ip'],

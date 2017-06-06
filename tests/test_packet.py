@@ -72,7 +72,6 @@ def test_name(packet_resource, packet_device):
     'project_id': "573b1856-b214-43fb-9282-314d57e99eb7",
     'state': 'active',
     'ansible_ssh_host': "147.75.100.215",
-    'ansible_ssh_port': 22,
     'ansible_ssh_user': 'root',
     'ipv4_address': "147.75.100.215",
     'public_ipv4': "147.75.100.215",
