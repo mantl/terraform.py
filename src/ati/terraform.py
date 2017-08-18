@@ -730,11 +730,17 @@ def vsphere_host(resource, module_name, **kwargs):
 
 @parses('azurerm_virtual_machine')
 @calculate_mantl_vars
-def azurerm_host(resource, module_name):
+def azurerm_host(resource, module_name, **kwargs):
     name = resource['primary']['attributes']['name']
     raw_attrs = resource['primary']['attributes']
 
     groups = []
+
+    # Is windows os ?
+    is_windows = False
+    for attr in resource['primary']['attributes']:
+        if attr.endswith(".publisher") and resource['primary']['attributes'].get(attr).find("Windows") != -1:
+            is_windows = True
 
     attrs = {
         'id': raw_attrs['id'],
@@ -743,6 +749,11 @@ def azurerm_host(resource, module_name):
         'ansible_ssh_user': raw_attrs.get('tags.ssh_user', ''),
         'ansible_ssh_host': raw_attrs.get('tags.ssh_ip', ''),
     }
+    if is_windows:
+        attrs['ansible_user'] = raw_attrs.get('tags.ssh_user', '')
+        attrs['ansible_port'] = 5986
+        attrs['ansible_connection'] = 'winrm'
+        attrs['ansible_winrm_server_cert_validation'] = 'ignore'
 
     groups.append('role=' + raw_attrs.get('tags.role', ''))
 
