@@ -52,11 +52,11 @@ def iter_states(root=None):
 
 def iterresources(sources):
     for source in sources:
-	if type(source) in [unicode, str]:
+        if type(source) in [unicode, str]:
             with open(source, 'r') as json_file:
                 state = json.load(json_file)
-	else:
-	    state = source
+        else:
+            state = source
         for module in state['modules']:
             name = module['path'][-1]
             for key, resource in list(module['resources'].items()):
