@@ -26,6 +26,13 @@ import re
 
 import sh
 
+# https://github.com/mantl/terraform.py/issues/74
+try:
+    unicode
+    STRING_TYPES = [unicode, str]
+except NameError:
+    STRING_TYPES = [str]
+
 
 def tfstates(root=None):
     root = root or os.getcwd()
@@ -52,7 +59,7 @@ def iter_states(root=None):
 
 def iterresources(sources):
     for source in sources:
-        if type(source) in [unicode, str]:
+        if type(source) in STRING_TYPES:
             with open(source, 'r') as json_file:
                 state = json.load(json_file)
         else:
