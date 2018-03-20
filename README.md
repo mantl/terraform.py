@@ -37,7 +37,7 @@ For terraform >= 0.9.0, it also supports s3 remote state (and it should be trivi
 ## Installation
 
 ```
-git clone git@github.com:sean-abbott/terraform.py.git
+git clone git@github.com:mantl/terraform.py.git
 pipsi install terraform.py # basically, it needs to be on your path when you run ansible
 <edit a script in your inventory directory to include the below shell script>
 ```
