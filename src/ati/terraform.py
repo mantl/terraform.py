@@ -540,7 +540,10 @@ def aws_host(resource, module_name, **kwargs):
     except KeyError:
         ssh_host_key =  'public_ip'
 
-    name = resource['primary']['attributes'][name_key]
+    try:
+      name = resource['primary']['attributes'][name_key]
+    except:
+      name = resource['primary']['attributes'][ssh_host_key]
     raw_attrs = resource['primary']['attributes']
 
     groups = []
